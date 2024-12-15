@@ -1,0 +1,8 @@
+prefix=/home/pi/ros_catkin_ws/devel_isolated/image_view
+
+Name: image_view
+Description: Description of image_view
+Version: 1.12.16
+Cflags: -I/home/pi/ros_catkin_ws/devel_isolated/image_view/include
+Libs: -L/home/pi/ros_catkin_ws/devel_isolated/image_view/lib 
+Requires: dynamic_reconfigure

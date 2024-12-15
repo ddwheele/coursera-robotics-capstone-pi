@@ -1,0 +1,8 @@
+prefix=/home/pi/ros_catkin_ws/devel_isolated/depth_image_proc
+
+Name: depth_image_proc
+Description: Description of depth_image_proc
+Version: 1.12.16
+Cflags: -I/home/pi/ros_catkin_ws/src/image_pipeline/depth_image_proc/include
+Libs: -L/home/pi/ros_catkin_ws/devel_isolated/depth_image_proc/lib -ldepth_image_proc
+Requires: 

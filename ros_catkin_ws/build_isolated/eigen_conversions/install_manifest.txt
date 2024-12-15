@@ -1,0 +1,13 @@
+/opt/ros/indigo/_setup_util.py
+/opt/ros/indigo/env.sh
+/opt/ros/indigo/setup.bash
+/opt/ros/indigo/setup.sh
+/opt/ros/indigo/setup.zsh
+/opt/ros/indigo/.rosinstall
+/opt/ros/indigo/lib/pkgconfig/eigen_conversions.pc
+/opt/ros/indigo/share/eigen_conversions/cmake/eigen_conversionsConfig.cmake
+/opt/ros/indigo/share/eigen_conversions/cmake/eigen_conversionsConfig-version.cmake
+/opt/ros/indigo/share/eigen_conversions/package.xml
+/opt/ros/indigo/include/eigen_conversions/eigen_kdl.h
+/opt/ros/indigo/include/eigen_conversions/eigen_msg.h
+/opt/ros/indigo/lib/libeigen_conversions.so

@@ -1,0 +1,14 @@
+/opt/ros/indigo/_setup_util.py
+/opt/ros/indigo/env.sh
+/opt/ros/indigo/setup.bash
+/opt/ros/indigo/setup.sh
+/opt/ros/indigo/setup.zsh
+/opt/ros/indigo/.rosinstall
+/opt/ros/indigo/lib/pkgconfig/depth_image_proc.pc
+/opt/ros/indigo/share/depth_image_proc/cmake/depth_image_procConfig.cmake
+/opt/ros/indigo/share/depth_image_proc/cmake/depth_image_procConfig-version.cmake
+/opt/ros/indigo/share/depth_image_proc/package.xml
+/opt/ros/indigo/include/depth_image_proc/depth_traits.h
+/opt/ros/indigo/include/depth_image_proc/depth_conversions.h
+/opt/ros/indigo/lib/libdepth_image_proc.so
+/opt/ros/indigo/share/depth_image_proc/nodelet_plugins.xml

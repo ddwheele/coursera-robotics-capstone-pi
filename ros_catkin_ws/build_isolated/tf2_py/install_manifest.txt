@@ -1,0 +1,11 @@
+/opt/ros/indigo/_setup_util.py
+/opt/ros/indigo/env.sh
+/opt/ros/indigo/setup.bash
+/opt/ros/indigo/setup.sh
+/opt/ros/indigo/setup.zsh
+/opt/ros/indigo/.rosinstall
+/opt/ros/indigo/lib/pkgconfig/tf2_py.pc
+/opt/ros/indigo/share/tf2_py/cmake/tf2_pyConfig.cmake
+/opt/ros/indigo/share/tf2_py/cmake/tf2_pyConfig-version.cmake
+/opt/ros/indigo/share/tf2_py/package.xml
+/opt/ros/indigo/lib/python2.7/dist-packages/tf2_py/_tf2.so

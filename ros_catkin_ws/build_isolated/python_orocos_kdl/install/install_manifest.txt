@@ -1,0 +1,2 @@
+/opt/ros/indigo/lib/python2.7/dist-packages/PyKDL.so
+/opt/ros/indigo/share/python_orocos_kdl/package.xml

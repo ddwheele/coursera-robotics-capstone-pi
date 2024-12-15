@@ -1,0 +1,13 @@
+/opt/ros/indigo/_setup_util.py
+/opt/ros/indigo/env.sh
+/opt/ros/indigo/setup.bash
+/opt/ros/indigo/setup.sh
+/opt/ros/indigo/setup.zsh
+/opt/ros/indigo/.rosinstall
+/opt/ros/indigo/lib/pkgconfig/image_geometry.pc
+/opt/ros/indigo/share/image_geometry/cmake/image_geometryConfig.cmake
+/opt/ros/indigo/share/image_geometry/cmake/image_geometryConfig-version.cmake
+/opt/ros/indigo/share/image_geometry/package.xml
+/opt/ros/indigo/include/image_geometry//stereo_camera_model.h
+/opt/ros/indigo/include/image_geometry//pinhole_camera_model.h
+/opt/ros/indigo/lib/libimage_geometry.so

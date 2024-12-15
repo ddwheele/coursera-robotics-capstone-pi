@@ -1,0 +1,15 @@
+/opt/ros/indigo/_setup_util.py
+/opt/ros/indigo/env.sh
+/opt/ros/indigo/setup.bash
+/opt/ros/indigo/setup.sh
+/opt/ros/indigo/setup.zsh
+/opt/ros/indigo/.rosinstall
+/opt/ros/indigo/lib/pkgconfig/cv_bridge.pc
+/opt/ros/indigo/share/cv_bridge/cmake/cv_bridgeConfig.cmake
+/opt/ros/indigo/share/cv_bridge/cmake/cv_bridgeConfig-version.cmake
+/opt/ros/indigo/share/cv_bridge/package.xml
+/opt/ros/indigo/include/cv_bridge/cv_bridge.h
+/opt/ros/indigo/include/cv_bridge/rgb_colors.h
+/opt/ros/indigo/lib/python2.7/dist-packages/cv_bridge/boost/__init__.py
+/opt/ros/indigo/lib/libcv_bridge.so
+/opt/ros/indigo/lib/python2.7/dist-packages/cv_bridge/boost/cv_bridge_boost.so

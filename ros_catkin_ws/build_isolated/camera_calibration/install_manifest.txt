@@ -1,0 +1,13 @@
+/opt/ros/indigo/_setup_util.py
+/opt/ros/indigo/env.sh
+/opt/ros/indigo/setup.bash
+/opt/ros/indigo/setup.sh
+/opt/ros/indigo/setup.zsh
+/opt/ros/indigo/.rosinstall
+/opt/ros/indigo/lib/pkgconfig/camera_calibration.pc
+/opt/ros/indigo/share/camera_calibration/cmake/camera_calibrationConfig.cmake
+/opt/ros/indigo/share/camera_calibration/cmake/camera_calibrationConfig-version.cmake
+/opt/ros/indigo/share/camera_calibration/package.xml
+/opt/ros/indigo/lib/camera_calibration/cameracalibrator.py
+/opt/ros/indigo/lib/camera_calibration/cameracheck.py
+/opt/ros/indigo/lib/camera_calibration/tarfile_calibration.py
