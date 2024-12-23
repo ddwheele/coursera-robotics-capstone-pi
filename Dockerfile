@@ -14,6 +14,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-jazzy-perception \
     && rm -rf /var/lib/apt/lists/*
 
-RUN echo "alias ros='source /opt/ros/jazzy/setup.bash'" >> ~/.bashrc
+RUN echo "alias sr='source /opt/ros/jazzy/setup.bash'" >> ~/.bashrc
 
 
