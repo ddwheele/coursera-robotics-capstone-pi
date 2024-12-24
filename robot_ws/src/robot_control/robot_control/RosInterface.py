@@ -11,10 +11,10 @@ from std_msgs.msg import (
     Header,
 )
 
-from apriltags_ros.msg import (
-    AprilTagDetectionArray,
-    AprilTagDetection,
-)
+#from apriltags_ros.msg import (
+#    AprilTagDetectionArray,
+#    AprilTagDetection,
+#)
 
 from sensor_msgs.msg import Imu
 
@@ -56,7 +56,7 @@ class ROSInterface(object):
 
         # ROS publishers and subscribers
         self._pub = rospy.Publisher("/cmd_vel",Twist,queue_size=10)
-        rospy.Subscriber("/camera/tag_detections",AprilTagDetectionArray,self._tag_pose_callback)
+#        rospy.Subscriber("/camera/tag_detections",AprilTagDetectionArray,self._tag_pose_callback)
         rospy.Subscriber("/imu", Imu, self._imu_callback)
 
     def _tag_pose_callback(self,posearray):
