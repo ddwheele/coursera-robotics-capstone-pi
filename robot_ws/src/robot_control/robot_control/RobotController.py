@@ -16,9 +16,9 @@ class RobotController(Node):
     def timer_callback(self):
         msg = Twist()
         msg.linear.x = 0.5
-        msg.linear.y = 0
+        msg.linear.y = 0.0
         self.publisher_.publish(msg)
-        self.get_logger().info('Publishing: "%f, %f"' % msg.linear.x, msg.linear.y)
+        self.get_logger().info('Publishing: %f, %f' % (msg.linear.x, msg.linear.y))
 
 
 def main(args=None):
