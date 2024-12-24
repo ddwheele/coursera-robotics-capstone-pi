@@ -1,10 +1,10 @@
 from setuptools import find_packages, setup
 
-package_name = 'robot_control'
+package_name = 'dc_motor_driver'
 
 setup(
     name=package_name,
-    version='1.0.0',
+    version='0.0.0',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/ament_index/resource_index/packages',
@@ -14,13 +14,13 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='root',
-    maintainer_email='root@todo.todo',
-    description='The robot_control package',
+    maintainer_email='dawn.wheeler@gmail.com',
+    description='TODO: Package description',
     license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'robot_control = robot_control.RobotController:main',
+            'motor_driver = motor_driver.MotorDriver:main',
         ],
     },
 )
