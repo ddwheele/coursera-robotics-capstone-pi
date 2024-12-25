@@ -1,3 +1,4 @@
-motor_gain: 1
+motor_gain_left: 1
+motor_gain_right: 1
 wheel_radius: 0.03
 wheel_sep: 0.1

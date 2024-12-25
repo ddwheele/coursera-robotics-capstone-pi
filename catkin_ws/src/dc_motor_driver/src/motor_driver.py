@@ -6,11 +6,12 @@ from geometry_msgs.msg import Twist
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 
 class MotorDriver:
-    def __init__(self, motor_gain, wheel_sep, wheel_radius):
+    def __init__(self, motor_gain_left, motor_gain_right, wheel_sep, wheel_radius):
         self.test_mode = rospy.get_param("~test_mode",False)
         self._wheel_sep = wheel_sep
         self._wheel_rad = wheel_radius
-        self._gear_ratio = 7.5*motor_gain
+        self._gear_ratio_left = 7.5*motor_gain_left
+        self._gear_ratio_right = 7.5*motor_gain_right
         self._max_rpm = 130
         self._max_pwm = 255
 
@@ -40,8 +41,8 @@ class MotorDriver:
     def drive(self,twist):
         x = twist.linear.x
         w = twist.angular.z
-        vel_left = (x-w*self._wheel_sep/2)/self._wheel_rad*self._gear_ratio
-        vel_right = (x+w*self._wheel_sep/2)/self._wheel_rad*self._gear_ratio
+        vel_left = (x-w*self._wheel_sep/2)/self._wheel_rad*self._gear_ratio_left
+        vel_right = (x+w*self._wheel_sep/2)/self._wheel_rad*self._gear_ratio_right
 
         pwm_left = vel_left*self._max_pwm/self._max_rpm
         pwm_right = vel_right*self._max_pwm/self._max_rpm
@@ -85,11 +86,12 @@ if __name__ == '__main__':
     params_raw = f.read()
     f.close()
     params = yaml.load(params_raw)
-    motor_gain = params['motor_gain']
+    motor_gain_left = params['motor_gain_left']
+    motor_gain_right = params['motor_gain_right']
     wheel_sep = params['wheel_sep']
     wheel_radius = params['wheel_radius']
 
-    driver = MotorDriver(motor_gain, wheel_sep, wheel_radius)
+    driver = MotorDriver(motor_gain_left, motor_gain_right, wheel_sep, wheel_radius)
     
     rospy.Subscriber('cmd_vel', Twist, driver.drive)
 
