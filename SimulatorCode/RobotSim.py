@@ -345,18 +345,13 @@ class RobotSim(object):
         posx  = self.__x_gt[0,0]
         posy  = self.__x_gt[1,0]
         theta = self.__x_gt[2,0]
-
-        print(str(posx) + " " +  str(posy))
         # Angles
         cos = math.cos(theta)
         sin = math.sin(theta)
 
         # Draw main point of path
-        a = self.__line.get_xdata()+ [posx]
-        b = self.__line.get_ydata()+ [posx]
-
-        self.__line.set_xdata(self.__line.get_xdata()+ [posx])
-        self.__line.set_ydata(self.__line.get_ydata()+ [posy])
+        self.__line.set_xdata(posx)
+        self.__line.set_ydata(posy)
 
         if self.__frame_num > 0:
             # Draw trails

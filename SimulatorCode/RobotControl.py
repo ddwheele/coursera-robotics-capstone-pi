@@ -78,7 +78,7 @@ class RobotControl(object):
         # TODO for student: Comment this when running on the robot 
         meas = self.robot_sim.get_measurements()
         imu_meas = self.robot_sim.get_imu()
-        self.robot_sim.command_velocity(1.2, 0)
+        self.robot_sim.command_velocity(0.3, 0)
         # TODO for student: Use this when transferring code to robot
         # meas = self.ros_interface.get_measurements()
         # imu_meas = self.ros_interface.get_imu()
@@ -91,7 +91,7 @@ def main(args):
     f = open(param_path,'r')
     params_raw = f.read()
     f.close()
-    params = yaml.safe_load(params_raw)
+    params = yaml.load(params_raw, Loader=yaml.Loader)
     occupancy_map = np.array(params['occupancy_map'])
     world_map = np.array(params['world_map'])
     pos_init = np.array(params['pos_init'])
