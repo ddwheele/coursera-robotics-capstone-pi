@@ -78,7 +78,7 @@ class RobotControl(object):
         # TODO for student: Comment this when running on the robot 
         meas = self.robot_sim.get_measurements()
         imu_meas = self.robot_sim.get_imu()
-        self.robot_sim.command_velocity(0.3, 0)
+        self.robot_sim.command_velocity(0, 0)
         # TODO for student: Use this when transferring code to robot
         # meas = self.ros_interface.get_measurements()
         # imu_meas = self.ros_interface.get_imu()
