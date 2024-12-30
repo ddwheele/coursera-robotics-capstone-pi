@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 # TODO for student: User files, uncomment as completed
 #from MyShortestPath import dijkstras
 #from KalmanFilter import KalmanFilter
-#from DiffDriveController import DiffDriveController
+from DiffDriveController import DiffDriveController
 
 class RobotControl(object):
     """
@@ -67,7 +67,7 @@ class RobotControl(object):
         
         # Uncomment as completed
         #self.kalman_filter = KalmanFilter(world_map)
-        #self.diff_drive_controller = DiffDriveController(max_speed, max_omega)
+        self.diff_drive_controller = DiffDriveController(max_speed, max_omega)
 
     def process_measurements(self):
         """ 
@@ -82,6 +82,11 @@ class RobotControl(object):
         # TODO for student: Use this when transferring code to robot
         # meas = self.ros_interface.get_measurements()
         # imu_meas = self.ros_interface.get_imu()
+        meas[0]
+  
+        
+
+        control = self.diff_drive_controller.compute_vel(0
 
         return
     
