@@ -10,8 +10,8 @@ class DiffDriveController():
   Class used for controlling the robot linear and angular velocity
   """
   def __init__(self, max_speed, max_omega):
-    self.k_rho=0
-    self.k_alpha=0
+    self.k_rho=1
+    self.k_alpha=1
     self.k_beta=0
     self.MAX_SPEED = max_speed
     self.MAX_OMEGA = max_omega
@@ -30,16 +30,17 @@ class DiffDriveController():
     done - a boolean value specifying if the robot has reached its goal (or
         is close enough
     """
-    delta_x = goal.x - state.x
-    delta_y = goal.y - state.y
-    
-    if delta_x < EPSILON and delta_y < EPSILON:
-      return (0, 0, true)
+    delta_x = goal[0] - state[0]
+    delta_y = goal[1] - state[1]
+    theta = state[2]
+ 
+    if delta_x < DiffDriveController.EPSILON and delta_y < DiffDriveController.EPSILON:
+      return (0, 0, True)
 
     rho = np.sqrt(delta_x**2 + delta_y**2)
-    alpha = -state.theta + np.arctan2(delta_y, delta_x)
+    alpha = -theta + np.arctan2(delta_y, delta_x)
     beta = -theta - alpha
 
     v = self.k_rho * rho
-    omega = k_alpha * alpha + k_beta * beta
-    return (v, omega, false)
+    omega = self.k_alpha * alpha + self.k_beta * beta
+    return (v, omega, False)

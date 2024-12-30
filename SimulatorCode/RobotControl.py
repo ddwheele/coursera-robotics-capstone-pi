@@ -78,15 +78,24 @@ class RobotControl(object):
     # TODO for student: Comment this when running on the robot 
     meas = self.robot_sim.get_measurements()
     imu_meas = self.robot_sim.get_imu()
-    self.robot_sim.command_velocity(0, 0)
+#    self.robot_sim.command_velocity(0, 0)
     # TODO for student: Use this when transferring code to robot
     # meas = self.ros_interface.get_measurements()
     # imu_meas = self.ros_interface.get_imu()
-    meas[0]
-  
-        
+ 
+    if meas is None:
+      self.robot_sim.command_velocity(0,0)
+      return
+ 
+    origin = np.array([0, 0, 0])
+    tag = np.array([ meas[0][0], meas[0][1] ])
 
-    control = self.diff_drive_controller.compute_vel(0
+    control = self.diff_drive_controller.compute_vel(origin, tag)
+
+    if not control[2]:
+      self.robot_sim.command_velocity(control[0], control[1])
+    else:
+      self.robot_sim.command_velocity(0,0)
 
     return
     
