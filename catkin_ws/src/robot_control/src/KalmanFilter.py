@@ -40,10 +40,15 @@ class KalmanFilter:
     y_r # tag in robot frame
     theta_r # tag in robot frame
 
-    H_w = np.array([[ np.cos(theta_w), -np.sin(theta_w), x_w], [np.sin(theta_w), np.cos(theta_w), y_w], [0, 0, 1]])
-    H_r = np.array([[ np.cos(theta_r), -np.sin(theta_r), x_r], [np.sin(theta_r), np.cos(theta_r), y_r], [0, 0, 1]])
+    H_w = np.array([[np.cos(theta_w), -np.sin(theta_w), x_w],
+                    [np.sin(theta_w),  np.cos(theta_w), y_w],
+                    [              0,                0,   1]])
 
-    world_H_robot = H_w * np.linalg.inv(H_r)
+    H_r = np.array([[np.cos(theta_r), -np.sin(theta_r), x_r],
+                    [np.sin(theta_r),  np.cos(theta_r), y_r],
+                    [              0,                0,   1]])
+
+    world_H_robot = np.matmul(H_w, np.linalg.inv(H_r))
 
   def prediction(self, v, imu_meas):
     """
@@ -61,8 +66,44 @@ class KalmanFilter:
     predicted_covariance - a 3 by 3 numpy array of the predction of the
         covariance
     """
-    # YOUR CODE HERE
-    pass
+    if self.last_time is None:
+      self.last_time = imu_meas[4]
+      return (self.x_t, self.P_t)
+
+    dt = imu_meas[4] - self.last_time
+    omega = imu_meas[3]
+
+    theta = self.x_t[2] # for readability
+    n_v = self.Q_t[0]
+    n_w = self.Q_t[1]
+    cos_t = np.cos(theta)
+    sin_t = np.sin(theta)
+
+    # calculate new pose prediction
+    #
+    #                           [ v*cos(theta) ]        [ n_v*cos(theta) ]
+    #   Mu_hat = u_(t-1) + dt * [ v*sin(theta) ] + dt * [ n_v*sin(theta) ]
+    #                           [ omega        ]        [ n_w            ]
+    #
+    Mu_hat = self.x_t + dt * np.array([[v*cos_t], [v*sin_t], [omega]]) + dt * np.array([[n_v*cos_t], [n_v*sin_t], [n_w]])
+
+    # calculate new covariance matrix
+    # 
+    #               [  df          ( df )T ]   [  df          ( df )T ] 
+    #   Sigma_hat = [ ____ * P_t * (____)  ] + [ ____ * Q_t * (____)  ]
+    #               [  dx          ( dx )  ]   [  dn          ( dx )  ]
+    #
+    dfdx = np.eye(3) + dt * np.array([[0, 0, -v*sin_t], [0, 0, v*sin_t], [0, 0, 0])
+    dfdn = dt * np.array([[cos_t, 0], [sin_t, 0], [0, 1]])
+
+    PtdfdxT = np.matmul(self.P_t, dfdx.T)
+    QtdfdnT = np.matmul(self.Q_t, dfdn.T)
+
+    Sigma_hat = np.matmul(dfdx, PtdfdxT) + np.matmul(dfdn, QtdfdnT)
+
+    self.x_t = Mu_hat
+    self.P_t = Sigma_hat
+    return (self.x_t, self.P_t)
 
   def update(self,z_t):
     """
@@ -78,9 +119,26 @@ class KalmanFilter:
     predicted_state - a 3 by 1 numpy array of the updated state
     predicted_covariance - a 3 by 3 numpy array of the updated covariance
     """
-    # YOUR CODE HERE
-    pass
-        
+    # first, find where we have measured the robot to be
+    # for now, just use the first April Tag to calculate this
+
+    
+
+    # compute Kalman gain        
+    #
+    #               ( dh )T   [( dh )     ( dh )T       ]-1
+    #   K_t = P_t * (____)  * [(____)*P_t*(____)  + R_t ]
+    #               ( dx )    [( dx )     ( dx )        ]
+    #
+    # Our measurement model is just z_t = x_t + noise, so dh/dx is the identity matrix
+    #            
+    #   K_t = P_t * [P_t + R_t]^(-1)
+    #          
+    invOfPtPlusRt = np.linalg.inv(self.P_t + self.R_t)
+    K = np.matmul(self.P_t, invOfPtPlusRt)
+
+    
+
   def step_filter(self, v, imu_meas, z_t):
     """
     Perform step in filter, called every iteration (on robot, at 60Hz)
@@ -92,5 +150,12 @@ class KalmanFilter:
     Outputs:
     x_t - current estimate of the state
     """
-    # YOUR CODE HERE
-    pass
+    # Check if an IMU measurement came in
+    if imu_meas not None:
+      self.prediction(v, imu_meas)
+
+    if z_t not None:
+      self.update(z_t)
+ 
+    return self.x_t
+ 
