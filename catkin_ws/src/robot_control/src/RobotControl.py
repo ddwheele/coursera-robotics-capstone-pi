@@ -22,6 +22,10 @@ class RobotControl(object):
   Class used to interface with the rover. Gets sensor measurements through ROS subscribers,
   and transforms them into the 2D plane, and publishes velocity commands.
   """
+  use_simulator = False
+  demo_drive = True
+  follow_tag = False
+
   def __init__(self, world_map,occupancy_map, pos_init, pos_goal, max_speed, max_omega, x_spacing, y_spacing, t_cam_to_body):
     """
     Initialize the class
@@ -36,6 +40,18 @@ class RobotControl(object):
     #self.kalman_filter = KalmanFilter(world_map)
     #self.diff_drive_controller = DiffDriveController(max_speed, max_omega)
 
+  def stop(self):
+    if use_simulator:
+      self.robot_sim.command_velocity(0,0)
+    else:
+      self.ros_interface.command_velocity(0,0)
+
+  def make_it_go(self, lin_vel, ang_vel):
+    if use_simulator:
+      self.robot_sim.command_velocity(lin_vel, ang_vel)
+    else:
+      self.ros_interface.command_velocity(lin_vel, ang_vel)
+
   def process_measurements(self):
     """ 
     YOUR CODE HERE
@@ -44,26 +60,28 @@ class RobotControl(object):
     meas = self.ros_interface.get_measurements()
     imu_meas = self.ros_interface.get_imu()
 
-    # Module 3 - demonstrate rover moving
-    #self.ros_interface.command_velocity(0.3, 0.5)
-        
-    # Module 5 - demonstrate following an April Tag
-    if meas is None:
-      self.robot_sim.command_velocity(0,0)
+    # Module 3 - demo drive
+    if self.demo_drive:
+      self.ros_interface.command_velocity(0.3, 0.5)
+    return
+
+    # Module 5 - follow tag
+    if self.follow_tag:
+      if meas is None:
+        self.stop()
       return
 
-    origin = np.array([0, 0, 0])
-    tag = np.array([ meas[0][0], meas[0][1] ])
+      origin = np.array([0, 0, 0])
+      tag = np.array([ meas[0][0], meas[0][1] ])
 
-    control = self.diff_drive_controller.compute_vel(origin, tag)
+      control = self.diff_drive_controller.compute_vel(origin, tag)
 
-    if not control[2]:
-      self.robot_sim.command_velocity(control[0], control[1])
-    else:
-      self.robot_sim.command_velocity(0,0)
-
-    return
-    
+      if not control[2]:
+        self.make_it_go(control[0], control[1])
+      else:
+        self.stop()
+      return
+ 
 def main(args):
   rospy.init_node('robot_control')
 
