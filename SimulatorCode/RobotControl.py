@@ -90,6 +90,11 @@ class RobotControl(object):
     origin = np.array([0, 0, 0])
     tag = np.array([ meas[0][0], meas[0][1] ])
 
+    degrees = meas[0][2] * 180.0 / np.pi
+
+    print("%.2f, %.2f, theta = %.2f, id=%d, time=%.3f" %(meas[0][0], meas[0][1], degrees, meas[0][3], meas[0][4]))
+
+
     control = self.diff_drive_controller.compute_vel(origin, tag)
 
     if not control[2]:

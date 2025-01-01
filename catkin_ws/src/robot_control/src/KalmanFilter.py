@@ -119,12 +119,12 @@ class KalmanFilter:
     predicted_state - a 3 by 1 numpy array of the updated state
     predicted_covariance - a 3 by 3 numpy array of the updated covariance
     """
-    # first, find where we have measured the robot to be
-    # for now, just use the first April Tag to calculate this
+    # First, find where we have measured the robot to be.
+    # For now, just use the first April Tag to calculate this.
 
     
 
-    # compute Kalman gain        
+    # Compute Kalman gain        
     #
     #               ( dh )T   [( dh )     ( dh )T       ]-1
     #   K_t = P_t * (____)  * [(____)*P_t*(____)  + R_t ]
@@ -137,7 +137,28 @@ class KalmanFilter:
     invOfPtPlusRt = np.linalg.inv(self.P_t + self.R_t)
     K = np.matmul(self.P_t, invOfPtPlusRt)
 
-    
+    # Compute best estimate location
+    # 
+    #   mu = mu_hat + K * (z_t - mu_hat)
+    #    
+    mu = self.x_t + K * (z_t - self.x_t)
+
+    # Update the covariance
+    #
+    #                     ( dh )
+    #   Sigma = P_t - K * (____) * P_t
+    #                     ( dx )
+    #
+    # dh/dx is still identity
+    #
+    #   Sigma = P_t - K * P_t
+    #
+    Sigma = self.P_t - np.matmul(K, self.P_t)
+
+    self.x_t = mu
+    self.P_t = Sigma
+
+    return (self.x_t, self.P_t)
 
   def step_filter(self, v, imu_meas, z_t):
     """
@@ -154,6 +175,7 @@ class KalmanFilter:
     if imu_meas not None:
       self.prediction(v, imu_meas)
 
+    # Check if April Tag measurment came in
     if z_t not None:
       self.update(z_t)
  

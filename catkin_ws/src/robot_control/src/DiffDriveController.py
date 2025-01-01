@@ -10,7 +10,7 @@ class DiffDriveController():
   Class used for controlling the robot linear and angular velocity
   """
   def __init__(self, max_speed, max_omega):
-    self.k_rho=1
+    self.k_rho=.001
     self.k_alpha=1
     self.k_beta=0
     self.MAX_SPEED = max_speed
