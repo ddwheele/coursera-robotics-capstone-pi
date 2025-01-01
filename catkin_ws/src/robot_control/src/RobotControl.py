@@ -23,8 +23,10 @@ class RobotControl(object):
   and transforms them into the 2D plane, and publishes velocity commands.
   """
   use_simulator = False
-  demo_drive = True
-  follow_tag = False
+
+  # only one of the following should be true
+  demo_drive = False
+  follow_tag = True
 
   def __init__(self, world_map,occupancy_map, pos_init, pos_goal, max_speed, max_omega, x_spacing, y_spacing, t_cam_to_body):
     """
@@ -38,10 +40,10 @@ class RobotControl(object):
        
     # Uncomment as completed
     #self.kalman_filter = KalmanFilter(world_map)
-    #self.diff_drive_controller = DiffDriveController(max_speed, max_omega)
+    self.diff_drive_controller = DiffDriveController(max_speed, max_omega)
 
   def stop(self):
-    if use_simulator:
+    if self.use_simulator:
       self.robot_sim.command_velocity(0,0)
     else:
       self.ros_interface.command_velocity(0,0)
@@ -63,24 +65,29 @@ class RobotControl(object):
     # Module 3 - demo drive
     if self.demo_drive:
       self.ros_interface.command_velocity(0.3, 0.5)
-    return
+      return
 
     # Module 5 - follow tag
     if self.follow_tag:
       if meas is None:
         self.stop()
-      return
-
-      origin = np.array([0, 0, 0])
-      tag = np.array([ meas[0][0], meas[0][1] ])
-
-      control = self.diff_drive_controller.compute_vel(origin, tag)
-
-      if not control[2]:
-        self.make_it_go(control[0], control[1])
+        #print("No tag")
+        return
       else:
-        self.stop()
-      return
+        origin = np.array([0, 0, 0])
+        tag = np.array([ meas[0][0], meas[0][1] ])
+
+        print("shape = %d, %d" % (len(meas), len(meas[0])))
+        theta = meas[0][2] * 180.0 / np.pi
+        print("x=%.2f, y=%.2f, theta=%.2f, ?=%.2f" % (meas[0][0], meas[0][1], theta, meas[0][3]))
+
+        control = self.diff_drive_controller.compute_vel(origin, tag)
+
+        if not control[2]: # if not at goal
+          self.make_it_go(control[0], control[1])
+        else:
+          self.stop()
+    return
  
 def main(args):
   rospy.init_node('robot_control')
