@@ -49,7 +49,7 @@ class RobotControl(object):
       self.ros_interface.command_velocity(0,0)
 
   def make_it_go(self, lin_vel, ang_vel):
-    if use_simulator:
+    if self.use_simulator:
       self.robot_sim.command_velocity(lin_vel, ang_vel)
     else:
       self.ros_interface.command_velocity(lin_vel, ang_vel)
