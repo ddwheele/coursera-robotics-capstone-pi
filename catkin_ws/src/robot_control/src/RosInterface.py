@@ -67,9 +67,11 @@ class ROSInterface(object):
             return
         (self._t, self._R) = get_t_R(posearray.detections[0].pose.pose)
         print("in _tag_pose_callback")
-        print("self._R = ")
-        print(self._R)
+        #print("self._R = ")
+        #print(self._R)
+        #print("r[2,0]=%f, r[2,2]=%f" %(self._R[2,0], self._R[2,2]))
         self._angle = -np.arctan2(-self._R[2,0],np.sqrt(self._R[2,0]**2+self._R[2,2]**2))
+        print("angle = %f deg " % (self._angle * 180./np.pi))
         if math.isnan(self._angle):
             return
         self._R = np.dot(np.dot(self._R_cam2bot, self._R),self._R_tag2bot)

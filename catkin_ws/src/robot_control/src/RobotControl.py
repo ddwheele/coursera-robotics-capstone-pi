@@ -64,7 +64,7 @@ class RobotControl(object):
 
     # Module 3 - demo drive
     if self.demo_drive:
-      self.ros_interface.command_velocity(0.3, 0.5)
+      self.ros_interface.command_velocity(-0.3, 0.5)
       return
 
     # Module 5 - follow tag
@@ -74,14 +74,14 @@ class RobotControl(object):
         #print("No tag")
         return
       else:
-        origin = np.array([0, 0, 0])
+      #  origin = np.array([0, 0, 0])         tag = np.array([ meas[0][0], meas[0][1] ])
         tag = np.array([ meas[0][0], meas[0][1] ])
 
-        print("shape = %d, %d" % (len(meas), len(meas[0])))
+      #  print("shape = %d, %d" % (len(meas), len(meas[0])))
         theta = meas[0][2] * 180.0 / np.pi
-        print("x=%.2f, y=%.2f, theta=%.2f, ?=%.2f" % (meas[0][0], meas[0][1], theta, meas[0][3]))
+        print("tag %d at x=%.2fm, y=%.2fm, theta=%.2f deg" % (meas[0][3],meas[0][0], meas[0][1], theta))
 
-        control = self.diff_drive_controller.compute_vel(origin, tag)
+        control = self.diff_drive_controller.track_tag(tag)
 
         if not control[2]: # if not at goal
           self.make_it_go(control[0], control[1])
