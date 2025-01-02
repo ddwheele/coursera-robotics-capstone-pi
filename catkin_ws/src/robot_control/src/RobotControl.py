@@ -70,7 +70,7 @@ class RobotControl(object):
     # Module 5 - follow tag
     if self.follow_tag:
       if meas is None:
-        self.stop()
+        #self.stop()
         #print("No tag")
         return
       else:
@@ -85,8 +85,8 @@ class RobotControl(object):
 
         if not control[2]: # if not at goal
           self.make_it_go(control[0], control[1])
-        else:
-          self.stop()
+        #else:
+        #  self.stop()
     return
  
 def main(args):
