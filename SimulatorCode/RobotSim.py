@@ -290,11 +290,11 @@ class RobotSim(object):
             tag_world = self.markers[i] # tag = [x,y,theta]
             
             # robot position in world frame
-            robot_world  = self.__x_gt # (take [0,0], [1,0], and [2,0])
+            robot_world  = self.__x_gt # (take x=[0,0], y=[1,0], and w=[2,0])
 
             # tag position in camera frame, if camera frame were coincident with body frame
             # (ie, tag position in body frame, but with the axes rotated like the camera frame
-            tag_camera = [ 
+            tag_camera = [robot_world[0,0] - tag_world[0] , 0, tag_world[1] - robot_world[1,0]]
 
 
 
