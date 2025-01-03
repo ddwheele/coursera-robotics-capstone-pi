@@ -12,9 +12,9 @@ occupancy_map:
 max_omega: 6.28318
 max_vel: 1
 pos_init:
-- [1]
+- [0.25]
 - [0]
-- [2.35] # 1.5 looks up, 0 looks right, -1.5 looks down
+- [1.5] # 1.5 looks up, 0 looks right, -1.5 looks down
 pos_goal:
 - [0.6]
 - [1]

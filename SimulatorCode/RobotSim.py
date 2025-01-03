@@ -232,6 +232,7 @@ class RobotSim(object):
         wz - number for angular velocity of the robot, in rad/s
         Outputs: None, but controls the robot
         """
+        print("Velocity = %.2f; Omega = %.2f deg" % (vx, wz * 180./np.pi))
         noise = np.random.normal(0,self.__control_noise)
         self.__vel = min(max(vx + noise[0],0),self.__MAX_VELOCITY)
         self.__omega = min(max(wz + noise[1],-self.__MAX_OMEGA),self.__MAX_OMEGA)
@@ -266,8 +267,7 @@ class RobotSim(object):
 
     def get_measurements(self):
         """
-        Returns a list of lists of visible landmarks and a fresh boolean that
-        checks if it the measurement is ready
+        Returns a list of lists of visible landmarks or None if not enough time has passed
         Outputs:
         measurements - a N by 5 list of visible tags or None. The tags are in
             the form in the form (x,y,theta,id,time) with x,y being the 2D
@@ -280,8 +280,25 @@ class RobotSim(object):
         if curr_time - self.last_meas_time < self.__MEAS_RATE or len(self.markers_flipped) == 0:
             return None
         self.last_meas_time = curr_time
+        
+        #===================================================
+        # get tag positions in camera frame (this is what apriltag_ros publishes)
         self.__visible_markers = [False for i in range(len(self.markers_flipped))]
 
+        for i in range(len(self.markers_flipped)):
+            # tag position in world frame
+            tag_world = self.markers[i] # tag = [x,y,theta]
+            
+            # robot position in world frame
+            robot_world  = self.__x_gt # (take [0,0], [1,0], and [2,0])
+
+            # tag position in camera frame, if camera frame were coincident with body frame
+            # (ie, tag position in body frame, but with the axes rotated like the camera frame
+            tag_camera = [ 
+
+
+
+#===================================================
         H_WR = self.__H(self.__x_gt[:,0])
         # Get measurements to the robot frame
         meas = []
