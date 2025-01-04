@@ -161,43 +161,30 @@ def main(args):
     # ^^^^^^^^^^ above passes
 
     # 180 deg rotation, no translation
-    camNeg180 = [0, 0, to_rad(180)]
+    camNeg180 = [0, 0, to_rad(-180)]
 
     ans = tag_in_world_to_tag_in_camera(camNeg180, tag10)
-    print("answer")
-    print(ans)
     assert np.allclose(ans, [1,0])
     
     ans = tag_in_world_to_tag_in_camera(camNeg180, tag01)
-    print("answer")
-    print(ans)
     assert np.allclose(ans, [0, -1])
     
     ans = tag_in_world_to_tag_in_camera(camNeg180, tag55)
-    print("answer")
-    print(ans)
     assert np.allclose(ans, [5, -5])
-    
-
 
     # 180 deg rotation, -3 Y translation
-    camNeg180_minus3 = [0, -3, to_rad(180)]
+    camNeg180_minus3 = [0, -3, to_rad(-180)]
 
     ans = tag_in_world_to_tag_in_camera(camNeg180_minus3, tag10)
-    print("answer")
-    print(ans)
     assert np.allclose(ans, [1, -3])
     
     ans = tag_in_world_to_tag_in_camera(camNeg180_minus3, tag01)
-    print("answer")
-    print(ans)
     assert np.allclose(ans, [0, -4])
     
     ans = tag_in_world_to_tag_in_camera(camNeg180_minus3, tag55)
-    print("answer")
-    print(ans)
     assert np.allclose(ans, [5, -8])
-
+    
+    print("PASSED ALL TESTS!")
 
 if __name__ == "__main__":
   main(sys.argv)
