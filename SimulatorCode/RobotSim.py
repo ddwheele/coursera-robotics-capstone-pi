@@ -50,7 +50,7 @@ class RobotSim(object):
         self.__marker_width = 0.05
         # How high to draw the markers in the simulation
         self.__marker_height = 0.1
-        # Simulated IMU noise structure
+        # Simulated IMU noise structure (st. dev. of noise gaussian)
         self.__imu_noise = [0.05, 0.05, 0.05, 0.02]
         # Simulated control input noise structure
         self.__control_noise = [0.05, 0.05]
@@ -85,6 +85,7 @@ class RobotSim(object):
         self.__x_spacing = x_spacing
         self.__y_spacing = y_spacing
         self.markers = markers
+        # Why on earth are we flipping markers?!
         self.markers_flipped = np.copy(self.markers)
         for i in range(self.markers_flipped.shape[0]):
             self.markers_flipped[i][2]+=np.pi
@@ -232,7 +233,7 @@ class RobotSim(object):
         wz - number for angular velocity of the robot, in rad/s
         Outputs: None, but controls the robot
         """
-        print("Velocity = %.2f; Omega = %.2f deg" % (vx, wz * 180./np.pi))
+        print("Commanded velocity = %.2f; Omega = %.2f deg" % (vx, wz * 180./np.pi))
         noise = np.random.normal(0,self.__control_noise)
         self.__vel = min(max(vx + noise[0],0),self.__MAX_VELOCITY)
         self.__omega = min(max(wz + noise[1],-self.__MAX_OMEGA),self.__MAX_OMEGA)
@@ -269,7 +270,7 @@ class RobotSim(object):
         """
         Returns a list of lists of visible landmarks or None if not enough time has passed
         Outputs:
-        measurements - a N by 5 list of visible tags or None. The tags are in
+        measurements - an N by 5 list of visible tags or None. The tags are in
             the form in the form (x,y,theta,id,time) with x,y being the 2D
             position of the marker relative to the robot, theta being the
             relative orientation of the marker with respect to the robot, id
@@ -294,7 +295,7 @@ class RobotSim(object):
 
             # tag position in camera frame, if camera frame were coincident with body frame
             # (ie, tag position in body frame, but with the axes rotated like the camera frame
-            tag_camera = [robot_world[0,0] - tag_world[0] , 0, tag_world[1] - robot_world[1,0]]
+            tag_camera 
 
 
 

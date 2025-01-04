@@ -25,6 +25,7 @@ t_cam_to_body:
 - [0.0]
 - [0.0]
 world_map:
+# x, y, direction, tag number
 - [0.5, 1.0, 1.50, 0] # top 
 - [0.5,   0,-1.50, 1] # bottom
 - [1.0, 0.5,    0, 2] # right
