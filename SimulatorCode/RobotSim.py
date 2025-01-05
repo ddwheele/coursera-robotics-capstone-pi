@@ -8,6 +8,8 @@ from matplotlib import patches
 import time
 import math
 
+import mathUtils as mu
+
 class RobotSim(object):
     """
     Visualizes/simulates trajectory of robot over time
@@ -295,29 +297,48 @@ class RobotSim(object):
 
             # tag position in camera frame, if camera frame were coincident with body frame
             # (ie, tag position in body frame, but with the axes rotated like the camera frame
-            tag_camera 
+            tag_camera = mu.tag_in_world_to_tag_in_camera(robot_world, tag_world)
 
-
-
-#===================================================
-        H_WR = self.__H(self.__x_gt[:,0])
-        # Get measurements to the robot frame
-        meas = []
-
-        for i in range(len(self.markers_flipped)):
-            H_WT = self.__H(self.markers[i])
-            H_RT = np.linalg.solve(H_WR,H_WT)
+            # check if we can see it
+            # calculate view angle
+            view_angle = np.arctan2(tag_camera[0], tag_camera[1])
             
-            x_new = H_RT[0:2,2]
-            theta_new = math.atan2(H_RT[1,0], H_RT[0,0])
-            marker_view_angle = \
-                np.absolute(np.arccos(x_new[0]/(math.sqrt(x_new[0]**2 + x_new[1]**2))))
-            if abs(marker_view_angle) < self.__view_half_angle and abs(theta_new) < np.pi/3 and x_new[0] < 2:
+            meas = []
+            if abs(view_angle) < self.__view_half_angle \
+            and abs(tag_camera[2]) < np.pi/3 \
+            and tag_camera[1] < 2:
+                # we can see it
                 self.__visible_markers[i] = True
-                meas_i = np.array([x_new[0],x_new[1], theta_new, self.markers_flipped[i][3], self.last_meas_time])
+                meas_i = np.array([tag_camera[0],tag_camera[1], tag_camera[2], self.markers_flipped[i][3], self.last_meas_time])
+                
                 meas_i[0:3] = meas_i[0:3] + np.array([np.random.normal(0, self.__image_noise)])
                 meas.append(meas_i.tolist())
         return meas
+
+        #===================================================
+#        H_WR = self.__H(self.__x_gt[:,0])
+        # Get measurements to the robot frame
+        #meas = []
+
+#        for i in range(len(self.markers_flipped)):
+#            H_WT = self.__H(self.markers[i])
+#            H_RT = np.linalg.solve(H_WR,H_WT)
+            
+#            x_new = H_RT[0:2,2]
+#            theta_new = math.atan2(H_RT[1,0], H_RT[0,0])
+#            marker_view_angle = \
+#                np.absolute(np.arccos(x_new[0]/(math.sqrt(x_new[0]**2 + x_new[1]**2))))
+            
+            # why take absolute value again?
+            # looks like view angle must be < 37,
+            # marker can't be turned more than 60deg
+            # and can't be more than 2m away
+#            if abs(marker_view_angle) < self.__view_half_angle and abs(theta_new) < np.pi/3 and x_new[0] < 2:
+#                self.__visible_markers[i] = True
+#                meas_i = np.array([x_new[0],x_new[1], theta_new, self.markers_flipped[i][3], self.last_meas_time])
+#                meas_i[0:3] = meas_i[0:3] + np.array([np.random.normal(0, self.__image_noise)])
+#                meas.append(meas_i.tolist())
+#        return meas
 
     def set_est_state(self, est_state):
         """

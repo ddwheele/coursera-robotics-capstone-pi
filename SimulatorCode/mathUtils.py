@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import numpy as np
 
 def to_rad(degrees):
@@ -9,7 +8,7 @@ def to_rad(degrees):
 #   cam: camera position in world coordinates (x,y,theta)
 #   tag: tag position in world coordinates (x,y)
 # Output:
-#   tag position in camera coordinates (x,y)
+#   tag position in camera coordinates (x,y,0) (pretend everything is head-on, may implement theta later)
 def tag_in_world_to_tag_in_camera(cam, tag):
     camx = cam[0]
     camy = cam[1]
@@ -34,4 +33,4 @@ def tag_in_world_to_tag_in_camera(cam, tag):
     
     tag_camera = np.matmul(rotmat, tag_world)
         
-    return [tag_camera[1]-transformed_origin[1], tag_camera[0]-transformed_origin[0]]  
+    return [tag_camera[1]-transformed_origin[1], tag_camera[0]-transformed_origin[0], 0]  
