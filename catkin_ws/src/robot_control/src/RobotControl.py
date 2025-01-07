@@ -48,7 +48,7 @@ class RobotControl(object):
     else:
       self.ros_interface.command_velocity(0,0)
 
-  def make_it_go(self, lin_vel, ang_vel):
+  def command_velocity(self, lin_vel, ang_vel):
     if self.use_simulator:
       self.robot_sim.command_velocity(lin_vel, ang_vel)
     else:
@@ -84,7 +84,7 @@ class RobotControl(object):
         control = self.diff_drive_controller.track_tag(tag)
 
         if not control[2]: # if not at goal
-          self.make_it_go(control[0], control[1])
+          self.command_velocity(control[0], control[1])
         #else:
         #  self.stop()
     return
