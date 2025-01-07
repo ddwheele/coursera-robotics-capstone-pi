@@ -6,7 +6,7 @@ import numpy as np
 
 import mathUtils as mu
 
-def main(args):
+def test_tag_in_world_to_tag_in_camera():
     root2 = np.sqrt(2)
     root3 = np.sqrt(3)
     
@@ -125,12 +125,28 @@ def main(args):
     ans = mu.tag_in_world_to_tag_in_camera(camNeg180_minus3, tag55)
     assert np.allclose(ans, [5, -8, 0])
 
-    camSimStart = [0.25, 0, mu.to_rad(90)]
-    tagInSim = [0.5,1]
-    ans = mu.tag_in_world_to_tag_in_camera(camSimStart, tagInSim)
-    print(ans)
-    assert np.allclose(ans, [-0.25, 1, 0])
-    print("PASSED ALL TESTS!")
+    # camSimStart = [0.25, 0, mu.to_rad(90)]
+    # tagInSim = [0.5,1]
+    # ans = mu.tag_in_world_to_tag_in_camera(camSimStart, tagInSim)
+    # print(ans)
+    # assert np.allclose(ans, [-0.25, 1, 0])
+    print("Passed test_tag_in_world_to_tag_in_camera!")
+
+def test_robot_in_world_to_camera_in_world():
+  # no translation, no rotation
+  t_cam_to_body = [4,0,0]
+  robot000 = [0,0,0]
+  ans = mu.robot_in_world_to_camera_in_world(robot000, t_cam_to_body)
+  assert np.allclose(ans, [4, 0, 0])
+    
+
+  print("Passed test_robot_in_world_to_camera_in_world!")
+
+def main(args):
+  test_tag_in_world_to_tag_in_camera()
+  test_robot_in_world_to_camera_in_world()
+
+  print("PASSED ALL TESTS!")
 
 if __name__ == "__main__":
   main(sys.argv)

@@ -288,16 +288,21 @@ class RobotSim(object):
         # get tag positions in camera frame (this is what apriltag_ros publishes)
         self.__visible_markers = [False for i in range(len(self.markers_flipped))]
 
+        # robot position in world frame
+        robot_world  = self.__x_gt # (take x=[0,0], y=[1,0], and w=[2,0])
+
+       
+        # camera position in world frame
+        camera_world = []
+
+
         for i in range(len(self.markers_flipped)):
             # tag position in world frame
             tag_world = self.markers[i] # tag = [x,y,theta]
             
-            # robot position in world frame
-            robot_world  = self.__x_gt # (take x=[0,0], y=[1,0], and w=[2,0])
-
             # tag position in camera frame, if camera frame were coincident with body frame
             # (ie, tag position in body frame, but with the axes rotated like the camera frame
-            tag_camera = mu.tag_in_world_to_tag_in_camera(robot_world, tag_world)
+            tag_camera = mu.tag_in_world_to_tag_in_camera(camera_world, tag_world)
 
             # check if we can see it
             # calculate view angle
