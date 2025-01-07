@@ -12,7 +12,7 @@ def to_rad(degrees):
 def tag_in_world_to_tag_in_camera(cam, tag):
     camx = cam[0]
     camy = cam[1]
-    theta = cam[2] + np.pi/2.0
+    theta = cam[2] - np.pi/2.0
     
     # want theta between pi and -pi
     if theta > np.pi:
