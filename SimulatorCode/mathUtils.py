@@ -23,7 +23,7 @@ def tag_in_world_to_tag_in_camera(cam, tag):
     ct = np.cos(theta)
     st = np.sin(theta)
     
-    rotmat = np.array([[ct, st, 0], [-st, ct, 0], [0,0,1]])
+    rotmat = np.array([[ct, st, 0], [-st, ct, 0], [0,0,1]],dtype=object)
         
     # transformed origin offset
     cam_origin = np.array([camx, camy, 1])

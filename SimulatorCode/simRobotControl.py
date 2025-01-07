@@ -78,21 +78,26 @@ class RobotControl(object):
     # TODO for student: Comment this when running on the robot 
     meas = self.robot_sim.get_measurements()
     imu_meas = self.robot_sim.get_imu()
-#    self.robot_sim.command_velocity(0, 0)
- 
+
     if meas is None:
       self.robot_sim.command_velocity(0,0)
       return
+
+    print("meas length = %d" % len(meas))
+    if len(meas) > 0:
+      print(meas[0].size())
  
-    theta = meas[0][2] * 180.0 / np.pi
-    print("tag=%d, x=%.2f, y=%.2f, theta=%.2f" % (meas[0][3], meas[0][0], meas[0][1], theta))
+      theta = meas[0][2] * 180.0 / np.pi
+      print("tag=%d, x=%.2f, y=%.2f, theta=%.2f" % (meas[0][3], meas[0][0], meas[0][1], theta))
 
-    tag = np.array([ meas[0][0], meas[0][1] ])
+      tag = np.array([ meas[0][0], meas[0][1] ])
 
-    control = self.diff_drive_controller.track_tag(tag)
+      control = self.diff_drive_controller.track_tag(tag)
 
-    if not control[2]:
-      self.robot_sim.command_velocity(control[0], control[1])
+      if not control[2]:
+        self.robot_sim.command_velocity(control[0], control[1])
+      else:
+        self.robot_sim.command_velocity(0,0)
     else:
       self.robot_sim.command_velocity(0,0)
 
