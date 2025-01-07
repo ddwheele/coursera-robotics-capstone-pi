@@ -14,7 +14,7 @@ max_vel: 1
 pos_init:
 - [0.25]
 - [0]
-- [1.5] # 1.5 looks up, 0 looks right, -1.5 looks down
+- [1.57] # 1.5 looks up, 0 looks right, -1.5 looks down
 pos_goal:
 - [0.6]
 - [1]

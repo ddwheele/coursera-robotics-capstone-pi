@@ -12,7 +12,7 @@ def to_rad(degrees):
 def tag_in_world_to_tag_in_camera(cam, tag):
     camx = cam[0]
     camy = cam[1]
-    theta = cam[2] - np.pi/2.0
+    theta = cam[2] + np.pi/2
     
     # want theta between pi and -pi
     if theta > np.pi:
@@ -24,7 +24,7 @@ def tag_in_world_to_tag_in_camera(cam, tag):
     st = np.sin(theta)
     
     rotmat = np.array([[ct, st, 0], [-st, ct, 0], [0,0,1]],dtype=object)
-        
+
     # transformed origin offset
     cam_origin = np.array([camx, camy, 1])
     transformed_origin = np.matmul(rotmat, cam_origin)
@@ -32,5 +32,7 @@ def tag_in_world_to_tag_in_camera(cam, tag):
     tag_world = np.array([tag[0], tag[1], 1])
     
     tag_camera = np.matmul(rotmat, tag_world)
+
+    ans = [tag_camera[1]-transformed_origin[1], tag_camera[0]-transformed_origin[0], 0]  
         
     return [tag_camera[1]-transformed_origin[1], tag_camera[0]-transformed_origin[0], 0]  
