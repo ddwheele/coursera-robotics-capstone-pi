@@ -133,12 +133,52 @@ def test_tag_in_world_to_tag_in_camera():
     print("Passed test_tag_in_world_to_tag_in_camera!")
 
 def test_robot_in_world_to_camera_in_world():
+  root2 = np.sqrt(2)
+
   # no translation, no rotation
   t_cam_to_body = [4,0,0]
-  robot000 = [0,0,0]
-  ans = mu.robot_in_world_to_camera_in_world(robot000, t_cam_to_body)
+  robot00_0 = [0,0,0]
+  ans = mu.robot_in_world_to_camera_in_world(robot00_0, t_cam_to_body)
   assert np.allclose(ans, [4, 0, 0])
-    
+  
+  robot00_90 = [0,0,mu.to_rad(90)]
+  ans = mu.robot_in_world_to_camera_in_world(robot00_90, t_cam_to_body)
+  assert np.allclose(ans, [0, 4, mu.to_rad(90)])
+ 
+  robot00_45 = [0,0,mu.to_rad(45)]
+  ans = mu.robot_in_world_to_camera_in_world(robot00_45, t_cam_to_body)
+  assert np.allclose(ans, [4/root2, 4/root2, mu.to_rad(45)])
+
+  robot50_0 = [5,0,0]
+  ans = mu.robot_in_world_to_camera_in_world(robot50_0, t_cam_to_body)
+  assert np.allclose(ans, [9, 0, 0])
+ 
+  robot50_90 = [5,0,mu.to_rad(90)]
+  ans = mu.robot_in_world_to_camera_in_world(robot50_90, t_cam_to_body)
+  assert np.allclose(ans, [5, 4, mu.to_rad(90)])
+ 
+  robot05_0 = [0,5,0]
+  ans = mu.robot_in_world_to_camera_in_world(robot05_0, t_cam_to_body)
+  assert np.allclose(ans, [4, 5, 0])
+
+  robot05_90 = [0,5,mu.to_rad(90)]
+  ans = mu.robot_in_world_to_camera_in_world(robot05_90, t_cam_to_body)
+  assert np.allclose(ans, [0, 9, mu.to_rad(90)])
+
+  robot55_45 = [5,5,mu.to_rad(45)]
+  ans = mu.robot_in_world_to_camera_in_world(robot55_45, t_cam_to_body)
+  assert np.allclose(ans, [5+4/root2, 5+4/root2, mu.to_rad(45)])
+
+  t_cam_to_body = [6,2,0]
+  ans = mu.robot_in_world_to_camera_in_world(robot00_0, t_cam_to_body)
+  assert np.allclose(ans, [6, 2, 0])
+
+  ans = mu.robot_in_world_to_camera_in_world(robot00_90, t_cam_to_body)
+  assert np.allclose(ans, [-2, 6, mu.to_rad(90)])
+
+  robot00_180 = [0,0,mu.to_rad(180)]
+  ans = mu.robot_in_world_to_camera_in_world(robot00_180, t_cam_to_body)
+  assert np.allclose(ans, [-6, -2, mu.to_rad(180)])
 
   print("Passed test_robot_in_world_to_camera_in_world!")
 
