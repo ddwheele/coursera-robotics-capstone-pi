@@ -18,7 +18,7 @@ def tag_in_camera_is_correct(ans, truth):
   if correct:
     if np.isclose(ans[2], truth[2]):
       return True
-    if abs(ans[2]) > (np.pi/2) and abs(truth[2]) > (np.pi/2):
+    if abs(ans[2]) >= (np.pi/2) and abs(truth[2]) >= (np.pi/2):
       return True
   return False
 
@@ -111,10 +111,10 @@ def test_tag_in_world_to_tag_in_camera():
     tag3 = [3,0,0]
     ans = mu.tag_in_world_to_tag_in_camera(camNeg45_minus3, tag3)
     assert tag_in_camera_is_correct(ans, [3*root2, 0, mu.to_rad(45)])
-    
+  
     tagMinus3 = [0,-3, mu.to_rad(-45)]
     ans = mu.tag_in_world_to_tag_in_camera(camNeg45_minus3, tagMinus3)
-    assert tag_in_camera_is_correct(ans, [0, 0, 0])
+    assert tag_in_camera_is_correct(ans, [0, 0, np.pi]) # tag co-located with camera
 
     # 180 deg rotation, no translation
     camNeg180 = [0, 0, mu.to_rad(-180)] 

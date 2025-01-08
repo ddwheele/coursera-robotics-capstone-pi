@@ -51,33 +51,35 @@ def tag_in_world_to_tag_in_camera(cam, tag):
 
   # take care of positions where lines are vertical/horizontal
   if math.isclose(cam_theta,0): # cam points right
-    if tagx > camx: # tag is to right of cam
-      if tag_theta > -np.pi/2 and tag_theta < np.pi/2: # tag points generally right
+    if tagx >= camx: # tag is to right of cam
+      if tag_theta >= -np.pi/2 and tag_theta <= np.pi/2: # tag points generally right
         relative_theta = tag_theta 
       else: # tag too oblique
         relative_theta = cant_see_it
     else: # tag is to left of cam
       relative_theta = cant_see_it
   elif math.isclose(cam_theta, np.pi/2): # cam points forward
-    if tagy > camy: # tag is forward of camera
-      if tag_theta > 0 and tag_theta < np.pi: # tag points generally forward
+    if tagy >= camy: # tag is forward of camera
+      if tag_theta >= 0 and tag_theta < np.pi: # tag points generally forward
         relative_theta =  ensure_between( tag_theta-np.pi/2, -np.pi, np.pi)# rotate by 90 degrees
       else: # tag too oblique
         relative_theta = cant_see_it
     else: # tag behind cam
       relative_theta = cant_see_it
   elif math.isclose(cam_theta, np.pi): # cam points left
-    if tagx < camx: # tag is left of cam
-      if tag_theta > np.pi/2 and tag_theta < 3*np.pi/2: # tag points left-ish
+    if tagx <= camx: # tag is left of cam
+      if tag_theta >= np.pi/2 and tag_theta <= 3*np.pi/2: # tag points left-ish
         relative_theta = ensure_between(tag_theta+np.pi, -np.pi, np.pi)# rotate by 180 degrees
       else: # tag too oblique
         relative_theta = cant_see_it
     else: # tag behind cam
       relative_theta = cant_see_it
   elif math.isclose(cam_theta, -np.pi/2): # cam points -y
-    if tagy < camy: # tag is -y of cam
-      if tag_theta > np.pi: # tag points -y-ish
+    if tagy <= camy: # tag is -y of cam
+      if tag_theta >= np.pi: # tag points -y-ish
         relative_theta = ensure_between(tag_theta-np.pi/2, -np.pi, np.pi)# rotate by 90 degrees
+      elif tag_theta == 0: # because 0 = 2*pi
+        relative_theta = ensure_between(tag_theta+np.pi/2, -np.pi, np.pi)# rotate by 90 degrees
       else: # tag too oblique
         relative_theta = cant_see_it
     else: # tag behind cam
@@ -101,8 +103,8 @@ def tag_in_world_to_tag_in_camera(cam, tag):
     # the sign of this value indicates which side of the line the tag is on
     tag_side = m*(tagx - camx) - (tagy - camy)
 
-    if tag_side.sign() == 0 or visible.sign() == tag_side.sign():
-      relative_theta = ensure_between(cam_theta - ensure_between(tag_theta,-np.pi,np.pi),-np.pi,np.pi)
+    if math.isclose(tag_side,0) or (visible>0 and tag_side>0) or (visible<0 and tag_side<0):
+      relative_theta = ensure_between(ensure_between(tag_theta,-np.pi,np.pi) - cam_theta,-np.pi,np.pi)
     else:
       relative_theta = cant_see_it
 
