@@ -5,14 +5,16 @@ def to_rad(degrees):
     return degrees * np.pi / 180.0
 
 # Input:
-#   cam: camera position in world coordinates (x,y,theta)
+#   cam: camera position in world coordinates (x, y, theta = view axis)
 #   tag: tag position in world coordinates (x,y)
+#   world coordinates: x = right, y = forward, theta around vertical z (right-handed)
 # Output:
-#   tag position in camera coordinates (x,y,0) (pretend everything is head-on, may implement theta later)
+#   tag position in camera coordinates (x,z,0) (pretend everything is head-on, may implement theta later)
+#   camera coordinates: x = left, z = forward = view axis (left-handed)
 def tag_in_world_to_tag_in_camera(cam, tag):
     camx = cam[0]
     camy = cam[1]
-    theta = cam[2] + np.pi/2
+    theta = cam[2] 
     
     # want theta between pi and -pi
     if theta > np.pi:
@@ -46,7 +48,7 @@ def robot_in_world_to_camera_in_world(rob, t_cam_to_body):
         # rotation matrix (robot in world)
         ct = np.cos(rob[2])
         st = np.sin(rob[2])
-        rotmat = np.array([[ct, -st, 0], [st, ct, 0], [0, 0, 1]])
+        rotmat = np.array([[ct, -st, 0], [st, ct, 0], [0, 0, 1]],dtype=object)
 
         # camera location in homogeneous coordinates
         camera_hom = np.array([t_cam_to_body[0], t_cam_to_body[1], 1])

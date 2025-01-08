@@ -62,7 +62,7 @@ class RobotControl(object):
 
     # TODO for student: Comment this when running on the robot 
     self.robot_sim = RobotSim(world_map, occupancy_map, pos_init, pos_goal,
-                              max_speed, max_omega, x_spacing, y_spacing)
+                              max_speed, max_omega, x_spacing, y_spacing, t_cam_to_body)
     # YOUR CODE AFTER THIS
        
         # Uncomment as completed

@@ -15,7 +15,7 @@ class RobotSim(object):
     Visualizes/simulates trajectory of robot over time
     """
     def __init__(self, markers, occupancy_map, pos_init, goal_pos, max_speed,
-                 max_omega, x_spacing, y_spacing):
+                 max_omega, x_spacing, y_spacing, t_cam_to_body):
         """
         Initializes the class
         Inputs:
@@ -108,6 +108,7 @@ class RobotSim(object):
         # For termination
         self.done=False
         self.__frame_num = 0
+        self.__t_cam_to_body = t_cam_to_body
 
         plt.ion()
         self.__plot()
@@ -293,15 +294,14 @@ class RobotSim(object):
 
        
         # camera position in world frame
-        camera_world = []
+        camera_world = mu.robot_in_world_to_camera_in_world(robot_world, self.__t_cam_to_body)
 
 
         for i in range(len(self.markers_flipped)):
             # tag position in world frame
             tag_world = self.markers[i] # tag = [x,y,theta]
             
-            # tag position in camera frame, if camera frame were coincident with body frame
-            # (ie, tag position in body frame, but with the axes rotated like the camera frame
+            # tag position in camera frame
             tag_camera = mu.tag_in_world_to_tag_in_camera(camera_world, tag_world)
 
             # check if we can see it
