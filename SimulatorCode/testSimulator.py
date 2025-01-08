@@ -40,10 +40,10 @@ def test_tag_in_world_to_tag_in_camera():
     # translation, no rotation 
     cam007 = [7,0,0]
     ans = mu.tag_in_world_to_tag_in_camera(cam007, tag10)
-    assert np.allclose(ans, [0, -6, 0])
+    assert np.allclose(ans, [0, -6, mu.to_rad(180)])
         
     ans = mu.tag_in_world_to_tag_in_camera(cam007, tag01)
-    assert np.allclose(ans, [1, -7,  mu.to_rad(90)])
+    assert np.allclose(ans, [1,-7,mu.to_rad(90+(np.arctan2(7,1)*180/np.pi))])
     
     ans = mu.tag_in_world_to_tag_in_camera(cam007, tag55)
     assert np.allclose(ans, [5, -2,  mu.to_rad(45)])

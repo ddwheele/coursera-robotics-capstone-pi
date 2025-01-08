@@ -14,7 +14,7 @@ max_vel: 1
 pos_init:
 - [0.25]
 - [0]
-- [1.57] # 1.5 looks up, 0 looks right, -1.5 looks down
+- [1.57] # 1.57 looks up, 0 looks right, -1.5 looks down
 pos_goal:
 - [0.6]
 - [1]
@@ -26,12 +26,13 @@ t_cam_to_body:
 - [0.0]
 world_map:
 # x, y, direction, tag number
-- [0.5, 1.0, 1.50, 0] # top 
-- [0.5,   0,-1.50, 1] # bottom
+# 1.57 tag looks down (x axis through tag)
+- [0.5, 1.0, 1.57, 0] # top 
+- [0.5,   0,-1.57, 1] # bottom
 - [1.0, 0.5,    0, 2] # right
 - [0.0, 0.5, 3.14, 3] # left
-- [0.0, 1.0, 1.50, 4] # top left
-- [1.0, 1.0, 1.50, 5] # top right
+- [0.0, 1.0, 1.57, 4] # top left
+- [1.0, 1.0, 1.57, 5] # top right
 
 #- [0.230, 0., -1.570796, 0.0]
 #- [0.383, 0., -1.570796, 1.0]
