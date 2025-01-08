@@ -164,10 +164,19 @@ class KalmanFilter:
     """
     Perform step in filter, called every iteration (on robot, at 60Hz)
     Inputs:
-    v, imu_meas - descriptions in prediction. Will be None value if
-        values are not available
-    z_t - description in update. Will be None value if measurement is not
-        available
+    v - a number representing in m/s the commanded speed of the robot
+    imu_meas - a 5 by 1 numpy array consisting of the values
+        (acc_x,acc_y,acc_z,omega,time), with the fourth of the values giving
+        the gyroscope measurement for angular velocity (which you should
+        use as ground truth) and time giving the current timestamp. Ignore
+        the first three values (they are for the linear acceleration which
+        we don't use) Will be None value if values are not available
+    z_t - marker array, of length N with elements that are 4 by 1 numpy arrays.
+        Each element has marker form (x,y,theta,id). x,y gives the 2D position 
+        of the measurement with respect to the robot, theta the orientation of 
+        the marker with respect to the robot, and the unique id of the marker,
+        which you can find the corresponding marker from your map
+        Will be None value if measurement is not available
     Outputs:
     x_t - current estimate of the state
     """

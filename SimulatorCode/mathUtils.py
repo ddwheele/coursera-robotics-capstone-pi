@@ -6,11 +6,11 @@ def to_rad(degrees):
 
 # Input:
 #   cam: camera position in world coordinates (x, y, theta = view axis)
-#   tag: tag position in world coordinates (x,y)
-#   world coordinates: x = right, y = forward, theta around vertical z (right-handed)
+#   tag: tag position in world coordinates (x,y, theta)
+#   world coordinates are x = right, y = forward, theta around vertical z (right-handed)
 # Output:
 #   tag position in camera coordinates (x,z,0) (pretend everything is head-on, may implement theta later)
-#   camera coordinates: x = left, z = forward = view axis (left-handed)
+#   camera coordinates are x = left, z = forward = view axis (left-handed)
 def tag_in_world_to_tag_in_camera(cam, tag):
     camx = cam[0]
     camy = cam[1]
@@ -56,19 +56,3 @@ def robot_in_world_to_camera_in_world(rob, t_cam_to_body):
         
         ans = [rob[0] + rotated_cam[0], rob[1]+rotated_cam[1], rob[2]]
         return ans
-
-
-
-
-# # Input:
-# #   rob: robot position in world coordinates (x,y,theta)
-# # Output:
-# #   camera position in world coordinates (x,y,0) (pretend everything is head-on, may implement theta later)
-# def robot_in_world_to_camera_in_world(rob):
-#  # transformation matrix from body to camera
-#         ct = np.cos(rob[2])
-#         st = np.sin(rob[2])
-    
-#         rotmat = np.array([[ct, st, 0], [-st, ct, 0], [0,0,1]])
-
-

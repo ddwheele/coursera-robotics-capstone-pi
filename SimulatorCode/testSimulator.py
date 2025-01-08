@@ -13,40 +13,40 @@ def test_tag_in_world_to_tag_in_camera():
     root3 = np.sqrt(3)
     
     # no translation, no rotation
-    cam0 = [0,0,mu.to_rad(0)]
-    tag10 = [1,0]
+    cam0 = [0,0,0]
+    tag10 = [1,0,0] # tag faces origin
     ans = mu.tag_in_world_to_tag_in_camera(cam0, tag10)
     assert np.allclose(ans, [0, 1, 0])
     
-    tag01 = [0,1]
+    tag01 = [0,1, mu.to_rad(90)] # tag faces origin
     ans = mu.tag_in_world_to_tag_in_camera(cam0, tag01)
-    assert np.allclose(ans, [1, 0, 0])
+    assert np.allclose(ans, [1, 0, mu.to_rad(90)])
     
-    tag55 = [5,5]
+    tag55 = [5,5, mu.to_rad(45)]
     ans = mu.tag_in_world_to_tag_in_camera(cam0, tag55)
-    assert np.allclose(ans, [5, 5, 0])
+    assert np.allclose(ans, [5, 5, mu.to_rad(45)])
 
     # -90 deg rotation, no translation 
     camNeg90 = [0, 0, mu.to_rad(-90)]
     ans = mu.tag_in_world_to_tag_in_camera(camNeg90, tag10)
-    assert np.allclose(ans, [1, 0, 0])
+    assert np.allclose(ans, [1, 0, mu.to_rad(90)])
 
     ans = mu.tag_in_world_to_tag_in_camera(camNeg90, tag01)
-    assert np.allclose(ans, [0, -1, 0])
+    assert np.allclose(ans, [0, -1, mu.to_rad(180)])
     
     ans = mu.tag_in_world_to_tag_in_camera(camNeg90, tag55)
-    assert np.allclose(ans, [5, -5, 0])
+    assert np.allclose(ans, [5, -5, mu.to_rad(135)])
     
     # translation, no rotation 
-    cam007 = [7,0,mu.to_rad(0)]
+    cam007 = [7,0,0]
     ans = mu.tag_in_world_to_tag_in_camera(cam007, tag10)
     assert np.allclose(ans, [0, -6, 0])
         
     ans = mu.tag_in_world_to_tag_in_camera(cam007, tag01)
-    assert np.allclose(ans, [1, -7, 0])
+    assert np.allclose(ans, [1, -7,  mu.to_rad(90)])
     
     ans = mu.tag_in_world_to_tag_in_camera(cam007, tag55)
-    assert np.allclose(ans, [5, -2, 0])
+    assert np.allclose(ans, [5, -2,  mu.to_rad(45)])
 
     # -90 deg rotation, 7 translation 
     camNeg90plus7 = [7, 0, mu.to_rad(-90)]
@@ -62,32 +62,32 @@ def test_tag_in_world_to_tag_in_camera():
     # 45 deg rotation, no translation
     camNeg45 = [0, 0, mu.to_rad(-45)]
     ans = mu.tag_in_world_to_tag_in_camera(camNeg45, tag10)
-    assert np.allclose(ans, [root2/2, root2/2, 0])
+    assert np.allclose(ans, [root2/2, root2/2, mu.to_rad(45)])
     
     ans = mu.tag_in_world_to_tag_in_camera(camNeg45, tag01)
-    assert np.allclose(ans, [root2/2, -root2/2, 0])
+    assert np.allclose(ans, [root2/2, -root2/2, mu.to_rad(135)])
     
     ans = mu.tag_in_world_to_tag_in_camera(camNeg45, tag55)
-    assert np.allclose(ans, [5*root2, 0, 0])
+    assert np.allclose(ans, [5*root2, 0, mu.to_rad(90)])
         
     # -30 deg rotation, no translation
     camNeg30 = [0, 0, mu.to_rad(-30)]
     ans = mu.tag_in_world_to_tag_in_camera(camNeg30, tag10)
-    assert np.allclose(ans, [0.5, root3/2.0, 0])
+    assert np.allclose(ans, [0.5, root3/2.0, mu.to_rad(30)])
     
     ans = mu.tag_in_world_to_tag_in_camera(camNeg30, tag01)
-    assert np.allclose(ans, [root3/2.0, -0.5, 0])
+    assert np.allclose(ans, [root3/2.0, -0.5, mu.to_rad(120)])
     
     # 90 deg rotation, no translation
     cam90 = [0, 0, mu.to_rad(90)]
     ans = mu.tag_in_world_to_tag_in_camera(cam90, tag10)
-    assert np.allclose(ans, [-1, 0, 0])
+    assert np.allclose(ans, [-1, 0, mu.to_rad(-90)])
 
     ans = mu.tag_in_world_to_tag_in_camera(cam90, tag01)
     assert np.allclose(ans, [0, 1, 0])
     
     ans = mu.tag_in_world_to_tag_in_camera(cam90, tag55)
-    assert np.allclose(ans, [-5, 5, 0])
+    assert np.allclose(ans, [-5, 5, mu.to_rad(-45)])
 
     # -45 deg rotation, -3 Y translation
     camNeg45_minus3 = [0, -3, mu.to_rad(-45)]
@@ -103,13 +103,13 @@ def test_tag_in_world_to_tag_in_camera():
     camNeg180 = [0, 0, mu.to_rad(-180)] 
 
     ans = mu.tag_in_world_to_tag_in_camera(camNeg180, tag10)
-    assert np.allclose(ans, [0, -1, 0])
+    assert np.allclose(ans, [0, -1, mu.to_rad(-180)])
     
     ans = mu.tag_in_world_to_tag_in_camera(camNeg180, tag01)
-    assert np.allclose(ans, [-1, 0, 0])
+    assert np.allclose(ans, [-1, 0, mu.to_rad(-90)])
     
     ans = mu.tag_in_world_to_tag_in_camera(camNeg180, tag55)
-    assert np.allclose(ans, [-5, -5, 0])
+    assert np.allclose(ans, [-5, -5, mu.to_rad(135)])
 
     # 180 deg rotation, -3 Y translation 
     camNeg180_minus3 = [0, -3, mu.to_rad(-180)]
@@ -123,6 +123,7 @@ def test_tag_in_world_to_tag_in_camera():
     ans = mu.tag_in_world_to_tag_in_camera(camNeg180_minus3, tag55)
     assert np.allclose(ans, [-8, -5, 0])
 
+    # simulation point
     camSimStart = [0.25, 0, mu.to_rad(90)]
     tagInSim = [0.5,1]
     ans = mu.tag_in_world_to_tag_in_camera(camSimStart, tagInSim)

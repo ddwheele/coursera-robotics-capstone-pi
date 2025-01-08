@@ -14,12 +14,8 @@ import sys
 
 import time
 
-# TODO for student: Comment this section when running on the robot 
 from RobotSim import RobotSim
 import matplotlib.pyplot as plt
-
-# TODO for student: uncomment when changing to the robot
-# from ros_interface import ROSInterface
 
 # TODO for student: User files, uncomment as completed
 #from MyShortestPath import dijkstras
@@ -63,7 +59,6 @@ class RobotControl(object):
     # TODO for student: Comment this when running on the robot 
     self.robot_sim = RobotSim(world_map, occupancy_map, pos_init, pos_goal,
                               max_speed, max_omega, x_spacing, y_spacing, t_cam_to_body)
-    # YOUR CODE AFTER THIS
        
         # Uncomment as completed
     #self.kalman_filter = KalmanFilter(world_map)
