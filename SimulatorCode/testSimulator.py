@@ -126,7 +126,6 @@ def test_tag_in_world_to_tag_in_camera():
     camSimStart = [0.25, 0, mu.to_rad(90)]
     tagInSim = [0.5,1]
     ans = mu.tag_in_world_to_tag_in_camera(camSimStart, tagInSim)
-    print(ans)
     assert np.allclose(ans, [-0.25, 1, 0])
     print("Passed test_tag_in_world_to_tag_in_camera!")
 

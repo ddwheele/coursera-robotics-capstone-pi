@@ -85,10 +85,9 @@ class RobotControl(object):
 
     print("meas length = %d" % len(meas))
     if len(meas) > 0:
-      print(meas[0].size())
  
       theta = meas[0][2] * 180.0 / np.pi
-      print("tag=%d, x=%.2f, y=%.2f, theta=%.2f" % (meas[0][3], meas[0][0], meas[0][1], theta))
+      print("tag=%d, x=%.2f, z=%.2f, theta=%.2f degrees" % (meas[0][3], meas[0][0], meas[0][1], theta))
 
       tag = np.array([ meas[0][0], meas[0][1] ])
 

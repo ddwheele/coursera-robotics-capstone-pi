@@ -306,7 +306,7 @@ class RobotSim(object):
 
             # check if we can see it
             # calculate view angle
-            view_angle = np.arctan2(tag_camera[1], tag_camera[0])
+            view_angle = np.arctan2(tag_camera[0], tag_camera[1])
             
             meas = []
             if abs(view_angle) < self.__view_half_angle \
@@ -314,7 +314,7 @@ class RobotSim(object):
             and tag_camera[1] < 2:
                 # we can see it
                 self.__visible_markers[i] = True
-                meas_i = np.array([tag_camera[0],tag_camera[1], tag_camera[2], self.markers_flipped[i][3], self.last_meas_time])
+                meas_i = np.array([tag_camera[0].item(),tag_camera[1].item(), tag_camera[2], self.markers_flipped[i][3], self.last_meas_time])
                 
                 meas_i[0:3] = meas_i[0:3] + np.array([np.random.normal(0, self.__image_noise)])
                 meas.append(meas_i.tolist())

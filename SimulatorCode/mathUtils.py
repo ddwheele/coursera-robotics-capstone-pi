@@ -28,7 +28,7 @@ def tag_in_world_to_tag_in_camera(cam, tag):
     rotmat = np.array([[ct, st, 0], [-st, ct, 0], [0,0,1]],dtype=object)
 
     # transformed origin offset
-    cam_origin = np.array([camx, camy, 1])
+    cam_origin = np.array([camx, camy, 1],dtype=object)
     transformed_origin = np.matmul(rotmat, cam_origin)
     
     tag_world = np.array([tag[0], tag[1], 1])
@@ -51,7 +51,7 @@ def robot_in_world_to_camera_in_world(rob, t_cam_to_body):
         rotmat = np.array([[ct, -st, 0], [st, ct, 0], [0, 0, 1]],dtype=object)
 
         # camera location in homogeneous coordinates
-        camera_hom = np.array([t_cam_to_body[0], t_cam_to_body[1], 1])
+        camera_hom = np.array([t_cam_to_body[0], t_cam_to_body[1], 1],dtype=object)
         rotated_cam = np.matmul(rotmat, camera_hom)
         
         ans = [rob[0] + rotated_cam[0], rob[1]+rotated_cam[1], rob[2]]
