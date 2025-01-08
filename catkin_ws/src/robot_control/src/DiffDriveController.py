@@ -10,12 +10,12 @@ class DiffDriveController():
   Class used for controlling the robot linear and angular velocity
   """
   def __init__(self, max_speed, max_omega):
-    self.k_rho=0.4
-    self.k_alpha=1.5
+    self.__k_rho=1
+    self.__k_alpha=1.5
 
-    self.k_beta=0
-    self.MAX_SPEED = max_speed
-    self.MAX_OMEGA = max_omega
+    self.__k_beta=0
+    self.__MAX_SPEED = max_speed
+    self.__MAX_OMEGA = max_omega
         
   def track_tag(self, tag):
     '''
@@ -30,16 +30,16 @@ class DiffDriveController():
         is close enough
     '''
     x = tag[0]
-    y = tag[1]
+    z = tag[1]
 
-    if(x < 0.2):
+    if(z < 0.1):
         return (0,0,True)
 
-    theta = np.arctan2(tag[1], tag[0])
+    theta = np.arctan2(x, z)
     print("angle error is %f deg" % (theta * 180./np.pi))
 
-    v = self.k_rho * x
-    omega = self.k_alpha * theta
+    v = self.__k_rho * z
+    omega = self.__k_alpha * theta
 
     print("\t\t\t\t\t\tv=%.2f m/s; omega=%.2f deg/s" % (v, omega*180.0/np.pi))
 
@@ -72,7 +72,7 @@ class DiffDriveController():
     alpha = -theta + np.arctan2(delta_y, delta_x)
     beta = -theta - alpha
 
-    v = self.k_rho * rho
-    omega = self.k_alpha * alpha + self.k_beta * beta
+    v = self.__k_rho * rho
+    omega = self.__k_alpha * alpha + self.__k_beta * beta
     print("\t\t\t\t\t\tv=%.2f m/s; theta=%.2f deg/s" % (v, omega*180.0/np.pi))
     return (v, omega, False)

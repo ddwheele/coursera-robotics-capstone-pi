@@ -75,12 +75,11 @@ class RobotControl(object):
     Main loop of the robot - where all measurements, control, and esimtaiton
     are done. This function is called at 60Hz
     """
-    # TODO for student: Comment this when running on the robot 
     meas = self.robot_sim.get_measurements()
     imu_meas = self.robot_sim.get_imu()
 
     if meas is None:
-      self.robot_sim.command_velocity(0,0)
+      #self.robot_sim.command_velocity(0,0)
       return
 
     print("meas length = %d" % len(meas))
@@ -97,8 +96,6 @@ class RobotControl(object):
         self.robot_sim.command_velocity(control[0], control[1])
       else:
         self.robot_sim.command_velocity(0,0)
-    else:
-      self.robot_sim.command_velocity(0,0)
 
     return
     
