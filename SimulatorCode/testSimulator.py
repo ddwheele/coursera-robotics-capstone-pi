@@ -16,7 +16,7 @@ import mathUtils as mu
 def tag_in_camera_is_correct(ans, truth):
   correct = np.allclose(ans[0:1], truth[0:1])
   if correct:
-    if np.allclose(ans[2], truth[2]):
+    if np.isclose(ans[2], truth[2]):
       return True
     if abs(ans[2]) > (np.pi/2) and abs(truth[2]) > (np.pi/2):
       return True
@@ -49,10 +49,10 @@ def test_tag_in_world_to_tag_in_camera():
     assert tag_in_camera_is_correct(ans, [1, 0, mu.to_rad(90)])
 
     ans = mu.tag_in_world_to_tag_in_camera(camNeg90, tag01)
-    assert tag_in_camera_is_correct(ans, [0, -1, mu.to_rad(180)])
+    assert tag_in_camera_is_correct(ans, [0, -1, cant_see_it])
     
     ans = mu.tag_in_world_to_tag_in_camera(camNeg90, tag55)
-    assert tag_in_camera_is_correct(ans, [5, -5, mu.to_rad(135)])
+    assert tag_in_camera_is_correct(ans, [5, -5, cant_see_it])
     
     # translation, no rotation 
     cam007 = [7,0,0]
@@ -135,14 +135,14 @@ def test_tag_in_world_to_tag_in_camera():
     assert tag_in_camera_is_correct(ans, [-3, -1, cant_see_it])
     
     ans = mu.tag_in_world_to_tag_in_camera(camNeg180_minus3, tag01)
-    assert tag_in_camera_is_correct(ans, [-4, 0, cant_see_it])
+    assert tag_in_camera_is_correct(ans, [-4, 0, mu.to_rad(-90)])
     
     ans = mu.tag_in_world_to_tag_in_camera(camNeg180_minus3, tag55)
     assert tag_in_camera_is_correct(ans, [-8, -5, cant_see_it])
 
     # simulation point
     camSimStart = [0.25, 0, mu.to_rad(90)]
-    tagInSim = [0.5,1]
+    tagInSim = [0.5,1, np.pi/2]
     ans = mu.tag_in_world_to_tag_in_camera(camSimStart, tagInSim)
     assert tag_in_camera_is_correct(ans, [-0.25, 1, 0])
     print("Passed test_tag_in_world_to_tag_in_camera!")
