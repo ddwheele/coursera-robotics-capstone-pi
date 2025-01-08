@@ -35,9 +35,7 @@ class RobotControl(object):
 
     # Handles all the ROS related items
     self.ros_interface = ROSInterface(t_cam_to_body)
-
-    # YOUR CODE AFTER THIS
-       
+    
     # Uncomment as completed
     #self.kalman_filter = KalmanFilter(world_map)
     self.diff_drive_controller = DiffDriveController(max_speed, max_omega)
@@ -70,11 +68,8 @@ class RobotControl(object):
     # Module 5 - follow tag
     if self.follow_tag:
       if meas is None:
-        #self.stop()
-        #print("No tag")
         return
       else:
-      #  origin = np.array([0, 0, 0])         tag = np.array([ meas[0][0], meas[0][1] ])
         tag = np.array([ meas[0][0], meas[0][1] ])
 
       #  print("shape = %d, %d" % (len(meas), len(meas[0])))
