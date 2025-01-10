@@ -1,11 +1,11 @@
 #!/usr/bin/python
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import animation
-from matplotlib import patches
-#import pylab
-import time
-import math
+# import matplotlib.pyplot as plt
+# from matplotlib import animation
+# from matplotlib import patches
+# #import pylab
+# import time
+# import math
 
 class KalmanFilter:
   """
@@ -25,30 +25,11 @@ class KalmanFilter:
     """
     self.markers = markers
     self.last_time = None # Used to keep track of time between measurements 
-    self.Q_t = np.eye(2)
-    self.R_t = np.eye(3)
+    self.Q_t = np.array([1,0], [0,1]) # 2x2 uncertainty to add to covariance when predicting
+    self.R_t = np.array([1,0,0], [0,1,0], [0,0,1]) # 3x3 uncertainty of sensor noise
     # Initialize position to origin, with a huge covariance
-    self.x_t = np.zeros(3)
-    self.P_t = np.full((3,3), 10e6)
-
-  def compute_world_H_robot():
-    x_w # tag in world frame
-    y_w # tag in world frame
-    theta_w # tag in world frame
-
-    x_r # tag in robot frame
-    y_r # tag in robot frame
-    theta_r # tag in robot frame
-
-    H_w = np.array([[np.cos(theta_w), -np.sin(theta_w), x_w],
-                    [np.sin(theta_w),  np.cos(theta_w), y_w],
-                    [              0,                0,   1]])
-
-    H_r = np.array([[np.cos(theta_r), -np.sin(theta_r), x_r],
-                    [np.sin(theta_r),  np.cos(theta_r), y_r],
-                    [              0,                0,   1]])
-
-    world_H_robot = np.matmul(H_w, np.linalg.inv(H_r))
+    self.x_t = np.zeros(3) # estimated position
+    self.P_t = np.full((3,3), 10e6) # initial covariance matrix
 
   def prediction(self, v, imu_meas):
     """
@@ -63,37 +44,49 @@ class KalmanFilter:
         we don't use)
     Outputs: a tuple with two elements
     predicted_state - a 3 by 1 numpy array of the predction of the state
-    predicted_covariance - a 3 by 3 numpy array of the predction of the
+    predicted_covariance - a 3 by 3 numpy array of the prediction of the
         covariance
     """
     if self.last_time is None:
-      self.last_time = imu_meas[4]
+      self.last_time = imu_meas[4] # time from imu
       return (self.x_t, self.P_t)
 
-    dt = imu_meas[4] - self.last_time
-    omega = imu_meas[3]
+    dt = imu_meas[4] - self.last_time # time interval
 
-    theta = self.x_t[2] # for readability
-    n_v = self.Q_t[0]
-    n_w = self.Q_t[1]
+    omega = imu_meas[3] # angular velocity
+    theta = self.x_t[2] # predicted robot orientation, for legibility
+    n_v = self.Q_t[0][0] # velocity noise
+    n_w = self.Q_t[1][1] # omega noise
     cos_t = np.cos(theta)
     sin_t = np.sin(theta)
 
     # calculate new pose prediction
     #
     #                           [ v*cos(theta) ]        [ n_v*cos(theta) ]
-    #   Mu_hat = u_(t-1) + dt * [ v*sin(theta) ] + dt * [ n_v*sin(theta) ]
+    #   mu_hat = u_(t-1) + dt * [ v*sin(theta) ] + dt * [ n_v*sin(theta) ] = f(x,omega,noise)
     #                           [ omega        ]        [ n_w            ]
     #
-    Mu_hat = self.x_t + dt * np.array([[v*cos_t], [v*sin_t], [omega]]) + dt * np.array([[n_v*cos_t], [n_v*sin_t], [n_w]])
+    mu_hat = self.x_t + dt * np.array([[v*cos_t], [v*sin_t], [omega]]) + dt * np.array([[n_v*cos_t], [n_v*sin_t], [n_w]])
 
     # calculate new covariance matrix
     # 
-    #               [  df          ( df )T ]   [  df          ( df )T ] 
-    #   Sigma_hat = [ ____ * P_t * (____)  ] + [ ____ * Q_t * (____)  ]
-    #               [  dx          ( dx )  ]   [  dn          ( dx )  ]
+    #               [  df              ( df )T ]   [  df          ( df )T ] 
+    #   Sigma_hat = [ ____ * Sigma_t * (____)  ] + [ ____ * Q_t * (____)  ]
+    #               [  dx              ( dx )  ]   [  dn          ( dn )  ]
     #
-    dfdx = np.eye(3) + dt * np.array([[0, 0, -v*sin_t], [0, 0, v*sin_t], [0, 0, 0])
+    #
+    #     df  |                            [ 0 0 -v*sin(theta) ]
+    #    ____ |                 = I + dt * [ 0 0  v*cos(theta) ]
+    #     dx  |                            [ 0 0            0  ]
+    #         |x_t-1, mu_t-1, 0
+    #
+    #     df         [ cos(theta) 0 ]
+    #    ____ = dt * [ sin(theta) 0 ]
+    #     dn         [         0  1 ]
+    #
+
+
+    dfdx = np.eye(3) + dt * np.array([[0, 0, -v*sin_t], [0, 0, v*sin_t], [0, 0, 0]])
     dfdn = dt * np.array([[cos_t, 0], [sin_t, 0], [0, 1]])
 
     PtdfdxT = np.matmul(self.P_t, dfdx.T)
@@ -101,8 +94,10 @@ class KalmanFilter:
 
     Sigma_hat = np.matmul(dfdx, PtdfdxT) + np.matmul(dfdn, QtdfdnT)
 
-    self.x_t = Mu_hat
+    self.x_t = mu_hat
     self.P_t = Sigma_hat
+
+    self.last_time = imu_meas[4]
     return (self.x_t, self.P_t)
 
   def update(self,z_t):
@@ -122,13 +117,13 @@ class KalmanFilter:
     # First, find where we have measured the robot to be.
     # For now, just use the first April Tag to calculate this.
 
-    
+
 
     # Compute Kalman gain        
     #
-    #               ( dh )T   [( dh )     ( dh )T       ]-1
-    #   K_t = P_t * (____)  * [(____)*P_t*(____)  + R_t ]
-    #               ( dx )    [( dx )     ( dx )        ]
+    #               ( dh )T   [( dh )         ( dh )T       ]-1
+    #   K_t = P_t * (____)  * [(____)*Sigma_t*(____)  + R_t ]
+    #               ( dx )    [( dx )         ( dx )        ]
     #
     # Our measurement model is just z_t = x_t + noise, so dh/dx is the identity matrix
     #            
