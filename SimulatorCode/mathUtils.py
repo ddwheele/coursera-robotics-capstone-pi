@@ -33,7 +33,7 @@ def tag_in_camera_to_camera_in_world(tag_world, tag_camera):
 
   robot_x = w_H_r[0,2]
   robot_y = w_H_r[1,2]
-  robot_theta = np.arctan2(w_H_r[1,0],w_H_r[0,0])
+  robot_theta = np.arctan2(w_H_r[1,0],w_H_r[0,0]) + np.pi/2
   return [robot_x, robot_y, robot_theta]
 
 # Inputs:
