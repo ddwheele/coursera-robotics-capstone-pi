@@ -11,9 +11,12 @@ def to_rad(degrees):
 # Outputs:
 #   returns camera position in world coordinates 
 def tag_in_camera_to_camera_in_world(tag_world, tag_camera):
+  # trying again.
+  #robot_theta = tag_world[2] - (tag_camera[2]-np.pi/2)
+
   # First let's make the camera coordinates into a right-handed coordinate system
-  x_cam = -tag_camera[0] # flip the x
-  y_cam = tag_camera[1] # z becomes y
+  x_cam = tag_camera[1] # z becomes x
+  y_cam = tag_camera[0] # x becomes y
   theta_cam = tag_camera[2] # don't need to flip theta
   cr = np.cos(theta_cam) # cos of relative angle
   sr = np.sin(theta_cam) # sin of relative angle
@@ -33,7 +36,8 @@ def tag_in_camera_to_camera_in_world(tag_world, tag_camera):
 
   robot_x = w_H_r[0,2]
   robot_y = w_H_r[1,2]
-  robot_theta = np.arctan2(w_H_r[1,0],w_H_r[0,0]) + np.pi/2
+  # # adding pi/2 because ... we seem to need it
+  robot_theta = np.arctan2(w_H_r[1,0],w_H_r[0,0]) 
   return [robot_x, robot_y, robot_theta]
 
 # Inputs:

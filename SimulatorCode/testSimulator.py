@@ -39,16 +39,17 @@ def triplet_is_correct(ans, truth):
   return False
 
 def test_tag_in_camera_to_robot_in_world():
-  # tag is in world coordinates
-  # North
-  tag02_90 = [0, 2, mu.to_rad(90)]
-  tag_straight_at_camera_1 = [0,1,mu.to_rad(90)]
-  ans = mu.tag_in_camera_to_camera_in_world(tag02_90, tag_straight_at_camera_1)
-  assert triplet_is_correct(ans, [0,1,mu.to_rad(90)]) # got 0
   # East
   tag200 =  [2,0,0]
+  tag_straight_at_camera_1 = [0,1,mu.to_rad(90)]
   ans = mu.tag_in_camera_to_camera_in_world(tag200, tag_straight_at_camera_1)
+  print(ans)
   assert triplet_is_correct(ans, [1,0,0]) # got -90
+  # North
+  tag02_90 = [0, 2, mu.to_rad(90)]
+  ans = mu.tag_in_camera_to_camera_in_world(tag02_90, tag_straight_at_camera_1)
+  print(ans)
+  assert triplet_is_correct(ans, [0,1,mu.to_rad(90)]) # got 0
   # West
   tagMin20_180 = [-2, 0, mu.to_rad(180)]
   ans = mu.tag_in_camera_to_camera_in_world(tagMin20_180, tag_straight_at_camera_1)
