@@ -61,6 +61,45 @@ def ensure_between(theta, low, high):
 #   tag position in camera coordinates (x,z,theta = 0 if straight on, +ive if rotated around vertical) 
 #   camera coordinates are x = left, z = forward = view axis (left-handed)
 def tag_in_world_to_tag_in_camera(cam, tag):
+  # cP = cRw * wP + cTw
+  # cP = tag in camera frame
+  # wP = tag in world frame
+  # cTw = world origin expressed in camera frame
+  # cRw = columns are world axes expressed in camera frame
+  wP =  np.array([[ tag[0]], [ tag[1]]])
+
+  # rho = distance from world origin to camera origin
+  rho = np.sqrt( cam[0]**2 + cam[1]**2 )
+
+  # phi = angle between world x axis and line from world origin to camera
+  phi = np.arctan2(cam[1], cam[0])
+
+  theta = cam[2]
+  # psi = theta - phi
+  psi = theta - phi
+
+  cTw = np.array([[rho * np.cos(psi)],[rho * np.sin(psi)]])
+
+  # define fake camera as X=real cam z and Y=real cam x
+  # fake camera is right-handed coordinates
+  cRw = np.array([[np.cos(theta), np.sin(theta)], [-np.sin(theta), np.cos(theta)]])
+  cP = np.matmul(cRw, wP) + cTw
+
+  tag_angle_in_cam = tag[2] - cam[2] + np.pi/2
+
+  # cP is in fake camera coords, so need to swap order to get x, z as expected
+  ans = [cP[1], cP[0], tag_angle_in_cam]
+  return [cP[1], cP[0], tag_angle_in_cam]
+
+
+# Input:
+#   cam: camera position in world coordinates (x, y, theta = view axis)
+#   tag: tag position in world coordinates (x,y, theta = out back of tag)
+#   world coordinates are x = right, y = forward, theta around vertical z (right-handed)
+# Output:
+#   tag position in camera coordinates (x,z,theta = 0 if straight on, +ive if rotated around vertical) 
+#   camera coordinates are x = left, z = forward = view axis (left-handed)
+def tag_in_world_to_tag_in_camera1(cam, tag):
   cant_see_it = 5 # angle > pi/2, indicates tag is not visible in camera
   camx = cam[0]
   camy = cam[1]

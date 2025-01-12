@@ -60,7 +60,7 @@ class KalmanFilter:
     cos_t = np.cos(theta)
     sin_t = np.sin(theta)
 
-    # calculate new pose prediction
+    # Calculate new pose prediction:S
     #
     #                           [ v*cos(theta) ]        [ n_v*cos(theta) ]
     #   mu_hat = u_(t-1) + dt * [ v*sin(theta) ] + dt * [ n_v*sin(theta) ] = f(x,omega,noise)
@@ -68,7 +68,7 @@ class KalmanFilter:
     #
     mu_hat = self.x_t + dt * np.array([[v*cos_t], [v*sin_t], [omega]]) + dt * np.array([[n_v*cos_t], [n_v*sin_t], [n_w]])
 
-    # calculate new covariance matrix
+    # Calculate new covariance matrix (Sigma = P):
     # 
     #               [  df              ( df )T ]   [  df          ( df )T ] 
     #   Sigma_hat = [ ____ * Sigma_t * (____)  ] + [ ____ * Q_t * (____)  ]
@@ -86,7 +86,7 @@ class KalmanFilter:
     #
 
 
-    dfdx = np.eye(3) + dt * np.array([[0, 0, -v*sin_t], [0, 0, v*sin_t], [0, 0, 0]])
+    dfdx = np.eye(3) + dt * np.array([[0, 0, -v*sin_t], [0, 0, v*cos_t], [0, 0, 0]])
     dfdn = dt * np.array([[cos_t, 0], [sin_t, 0], [0, 1]])
 
     PtdfdxT = np.matmul(self.P_t, dfdx.T)
@@ -117,9 +117,9 @@ class KalmanFilter:
     # First, find where we have measured the robot to be.
     # For now, just use the first April Tag to calculate this.
 
+    
 
-
-    # Compute Kalman gain        
+    # Compute Kalman gain:   
     #
     #               ( dh )T   [( dh )         ( dh )T       ]-1
     #   K_t = P_t * (____)  * [(____)*Sigma_t*(____)  + R_t ]
@@ -132,13 +132,13 @@ class KalmanFilter:
     invOfPtPlusRt = np.linalg.inv(self.P_t + self.R_t)
     K = np.matmul(self.P_t, invOfPtPlusRt)
 
-    # Compute best estimate location
+    # Compute best estimate location:
     # 
     #   mu = mu_hat + K * (z_t - mu_hat)
     #    
     mu = self.x_t + K * (z_t - self.x_t)
 
-    # Update the covariance
+    # Update the covariance:
     #
     #                     ( dh )
     #   Sigma = P_t - K * (____) * P_t

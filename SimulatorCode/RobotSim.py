@@ -308,7 +308,6 @@ class RobotSim(object):
             # calculate view angle
             view_angle = np.arctan2(tag_camera[0], tag_camera[1])
             
-            
             if abs(view_angle) < self.__view_half_angle \
             and abs(tag_camera[2]) < np.pi/3 \
             and tag_camera[1] < 2:
