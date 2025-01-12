@@ -62,10 +62,7 @@ def ensure_between(theta, low, high):
 #   camera coordinates are x = left, z = forward = view axis (left-handed)
 def tag_in_world_to_tag_in_camera(cam, tag):
   # cP = cRw * wP + cTw
-  # cP = tag in camera frame
   # wP = tag in world frame
-  # cTw = world origin expressed in camera frame
-  # cRw = columns are world axes expressed in camera frame
   wP =  np.array([[ tag[0]], [ tag[1]]])
 
   # rho = distance from world origin to camera origin
@@ -78,11 +75,15 @@ def tag_in_world_to_tag_in_camera(cam, tag):
   # psi = theta - phi
   psi = theta - phi
 
-  cTw = np.array([[rho * np.cos(psi)],[rho * np.sin(psi)]])
+  # cTw = world origin expressed in camera frame
+  cTw = np.array([[-rho * np.cos(psi)],[rho * np.sin(psi)]])
 
   # define fake camera as X=real cam z and Y=real cam x
   # fake camera is right-handed coordinates
+  # cRw = columns are world axes expressed in camera frame
   cRw = np.array([[np.cos(theta), np.sin(theta)], [-np.sin(theta), np.cos(theta)]])
+
+  # cP = tag in camera frame
   cP = np.matmul(cRw, wP) + cTw
 
   tag_angle_in_cam = tag[2] - cam[2] + np.pi/2
@@ -99,7 +100,7 @@ def tag_in_world_to_tag_in_camera(cam, tag):
 # Output:
 #   tag position in camera coordinates (x,z,theta = 0 if straight on, +ive if rotated around vertical) 
 #   camera coordinates are x = left, z = forward = view axis (left-handed)
-def tag_in_world_to_tag_in_camera1(cam, tag):
+def tag_in_world_to_tag_in_camera_old(cam, tag):
   cant_see_it = 5 # angle > pi/2, indicates tag is not visible in camera
   camx = cam[0]
   camy = cam[1]
