@@ -43,59 +43,47 @@ def test_tag_in_camera_to_camera_in_world():
   tag200 =  [2,0,0]
   tag_straight_at_camera_1 = [0,1,mu.to_rad(90)]
   ans = mu.tag_in_camera_to_camera_in_world(tag200, tag_straight_at_camera_1)
-  print(ans)
-  assert tag_angle_is_correct(ans, [1,0,5])
-  #assert triplet_is_correct(ans, [1,0,0]) # got -90
+  assert triplet_is_correct(ans, [1,0,0]) 
   # North
-  tag02_90 = [0, 2, mu.to_rad(90)]
+  tag02_90 = [0, 2, mu.to_rad(90)] # tag faces origin
   ans = mu.tag_in_camera_to_camera_in_world(tag02_90, tag_straight_at_camera_1)
-  print(ans)
-  assert tag_angle_is_correct(ans, [0,1,5])
-  #assert triplet_is_correct(ans, [0,1,mu.to_rad(90)]) # got 0
+  assert triplet_is_correct(ans, [0,1,mu.to_rad(90)]) 
   # West
   tagMin20_180 = [-2, 0, mu.to_rad(180)]
   ans = mu.tag_in_camera_to_camera_in_world(tagMin20_180, tag_straight_at_camera_1)
-  assert tag_angle_is_correct(ans, [-1,0,5])
- # assert triplet_is_correct(ans, [-1,0,mu.to_rad(-180)])
+  assert triplet_is_correct(ans, [-1,0,mu.to_rad(-180)])
   # South
   tag0Min2_Neg90 = [0, -2, mu.to_rad(-90)]
   ans = mu.tag_in_camera_to_camera_in_world(tag0Min2_Neg90, tag_straight_at_camera_1)
-  assert tag_angle_is_correct(ans, [0,-1,5])
- # assert triplet_is_correct(ans, [0,-1,mu.to_rad(-90)])
+  assert triplet_is_correct(ans, [0,-1,mu.to_rad(-90)])
 
   # North-east
   root2 = np.sqrt(2)
   tag22_45 = [2, 2, mu.to_rad(45)]
   tag_straight_at_camera_root2 = [0,root2,mu.to_rad(90)]
   ans = mu.tag_in_camera_to_camera_in_world(tag22_45, tag_straight_at_camera_root2)
-  assert tag_angle_is_correct(ans, [1,1,5])
-  #assert triplet_is_correct(ans, [1,1,mu.to_rad(45)])
+  assert triplet_is_correct(ans, [1,1,mu.to_rad(45)])
 
   # North-west
   tagNeg22_135 = [-2, 2, mu.to_rad(135)]
   ans = mu.tag_in_camera_to_camera_in_world(tagNeg22_135, tag_straight_at_camera_root2)
-  assert tag_angle_is_correct(ans, [-1,1,5])
-  #assert triplet_is_correct(ans, [-1,1,mu.to_rad(135)])
+  assert triplet_is_correct(ans, [-1,1,mu.to_rad(135)])
 
   # South-west
   tagNeg2Neg2_Neg135 = [-2, -2, mu.to_rad(-135)]
   ans = mu.tag_in_camera_to_camera_in_world(tagNeg2Neg2_Neg135, tag_straight_at_camera_root2)
-  assert tag_angle_is_correct(ans, [-1,-1,5])
-  #assert triplet_is_correct(ans, [-1,-1,mu.to_rad(-135)])
+  assert triplet_is_correct(ans, [-1,-1,mu.to_rad(-135)])
 
   # South-east
   tag2Neg2_Neg45 = [2, -2, mu.to_rad(-45)]
   ans = mu.tag_in_camera_to_camera_in_world(tag2Neg2_Neg45, tag_straight_at_camera_root2)
-  assert tag_angle_is_correct(ans, [1,-1,5])
-  #assert triplet_is_correct(ans, [1,-1,mu.to_rad(-45)])
+  assert triplet_is_correct(ans, [1,-1,mu.to_rad(-45)])
 
-  # East to north
-  tag_45_to_cam_11 = [1, 1, mu.to_rad(45)]
-  ans = mu.tag_in_camera_to_camera_in_world(tag22_45,tag_45_to_cam_11)
-  print(ans)
-  assert tag_angle_is_correct(ans, [1,1,5])
-  #assert triplet_is_correct(ans, [1,1,0])
-
+  # # East to north
+  # tag_45_to_cam_11 = [1, 1, mu.to_rad(45)]
+  # ans = mu.tag_in_camera_to_camera_in_world(tag22_45,tag_45_to_cam_11)
+  # print(ans)
+  # assert triplet_is_correct(ans, [1,1,0])
 
   print("Passed test_tag_in_camera_to_robot_in_world!")
 

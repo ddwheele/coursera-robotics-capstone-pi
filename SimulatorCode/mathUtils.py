@@ -45,9 +45,11 @@ def tag_in_camera_to_camera_in_world(tag_world, tag_camera):
   # wRt columns are tag axis in world coordinates
   wRt = np.array([[ np.cos(tag_world[2]), np.sin(tag_world[2])],\
                   [-np.sin(tag_world[2]), np.cos(tag_world[2])]])
-  
+
   wP = np.matmul(wRt, tP) + wTt
-  return [wP[0], wP[1],5]
+  cam_world_angle = tag_world[2] - tag_camera[2] + np.pi/2
+
+  return [wP[0], wP[1], cam_world_angle]
 
 # Input:
 #   cam: camera position in world coordinates (x, y, theta = view axis)
