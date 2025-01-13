@@ -48,9 +48,9 @@ def tag_in_camera_to_camera_in_world(tag_world, tag_camera):
 #   returns theta wrapped around to fit between low and high
 def ensure_between(theta, low, high):
   if theta > high:
-    theta = theta - np.pi
+    theta = theta - 2*np.pi
   elif theta < low:
-    theta = theta + np.pi
+    theta = theta + 2*np.pi
   return theta
 
 # Input:
@@ -60,7 +60,8 @@ def ensure_between(theta, low, high):
 # Output:
 #   tag position in camera coordinates (x,z,theta = 0 if straight on, +ive if rotated around vertical) 
 #   camera coordinates are x = left, z = forward = view axis (left-handed)
-def tag_in_world_to_tag_in_camera(cam, tag):
+def tag_in_world_to_tag_in_camera(cam, tag) :
+  cant_see_it = 5
   # cP = cRw * wP + cTw
   # wP = tag in world frame
   wP =  np.array([[ tag[0]], [ tag[1]]])
@@ -71,9 +72,9 @@ def tag_in_world_to_tag_in_camera(cam, tag):
   # phi = angle between world x axis and line from world origin to camera
   phi = np.arctan2(cam[1], cam[0])
 
-  theta = cam[2]
-  # psi = theta - phi
-  psi = theta - phi
+  cam_theta = cam[2]
+  # psi = cam_theta - phi
+  psi = cam_theta - phi
 
   # cTw = world origin expressed in camera frame
   cTw = np.array([[-rho * np.cos(psi)],[rho * np.sin(psi)]])
@@ -81,16 +82,61 @@ def tag_in_world_to_tag_in_camera(cam, tag):
   # define fake camera as X=real cam z and Y=real cam x
   # fake camera is right-handed coordinates
   # cRw = columns are world axes expressed in camera frame
-  cRw = np.array([[np.cos(theta), np.sin(theta)], [-np.sin(theta), np.cos(theta)]])
+  cRw = np.array([[np.cos(cam_theta), np.sin(cam_theta)], [-np.sin(cam_theta), np.cos(cam_theta)]])
 
   # cP = tag in camera frame
   cP = np.matmul(cRw, wP) + cTw
 
-  tag_angle_in_cam = tag[2] - cam[2] + np.pi/2
+  tag_angle_in_cam_frame = ensure_between(tag[2]-cam[2]+np.pi/2, -np.pi, np.pi)
+ 
+  tag_theta = ensure_between( tag[2], -np.pi, np.pi)
+
+  # make sure the tag is visible in the camera
+  relative_theta = tag_angle_in_cam_frame
+
+  # take care of positions where lines are vertical/horizontal
+  if math.isclose(tag_angle_in_cam_frame,0): # cam points right
+    if tag[0] >= cam[0]: # tag is to right of cam
+      if tag_theta < -np.pi/2 or tag_theta > np.pi/2 : # tag points generally left
+        # tag too oblique
+        relative_theta = cant_see_it
+    else: # tag is to left of cam
+      relative_theta = cant_see_it
+  elif math.isclose(tag_angle_in_cam_frame, np.pi): # cam points left
+    if tag[0] <= cam[0]: # tag is left of cam
+      if tag_theta > -np.pi/2 or tag_theta < np.pi/2: # tag points right-ish
+        # tag too oblique
+        relative_theta = cant_see_it
+    else: # tag behind cam
+      relative_theta = cant_see_it
+
+  else: # not vertical
+        # zx, zy is directly in front of camera
+    zx = cam[0] + np.cos(cam_theta)
+    zy = cam[1] + np.sin(cam_theta) 
+
+    # sx, sy is directly to the right of the camera
+    sx = cam[0] + np.cos(cam_theta - np.pi/2)
+    sy = cam[1] + np.sin(cam_theta - np.pi/2) 
+
+    # slope of line perpendicular to camera Z axis
+    m = (sy - cam[1]) / (sx - cam[0])
+
+    # the sign of this value indicates which side of the line the camera can see
+    visible = m*(zx - cam[0]) - (zy - cam[1])
+
+    # the sign of this value indicates which side of the line the tag is on
+    tag_side = m*(tag[0] - cam[0]) - (tag[1] - cam[1])
+
+    if math.isclose(tag_side,0) or (visible>0 and tag_side>0) or (visible<0 and tag_side<0):
+      relative_theta = tag_angle_in_cam_frame
+    else:
+      relative_theta = cant_see_it
 
   # cP is in fake camera coords, so need to swap order to get x, z as expected
-  ans = [cP[1], cP[0], tag_angle_in_cam]
-  return [cP[1], cP[0], tag_angle_in_cam]
+  ans = [cP[1], cP[0], relative_theta]
+
+  return [cP[1], cP[0], relative_theta]
 
 
 # Input:
