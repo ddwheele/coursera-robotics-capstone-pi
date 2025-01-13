@@ -95,14 +95,14 @@ def tag_in_world_to_tag_in_camera(cam, tag) :
   relative_theta = tag_angle_in_cam_frame
 
   # take care of positions where lines are vertical/horizontal
-  if math.isclose(tag_angle_in_cam_frame,0): # cam points right
+  if math.isclose(cam_theta,0): # cam points right
     if tag[0] >= cam[0]: # tag is to right of cam
       if tag_theta < -np.pi/2 or tag_theta > np.pi/2 : # tag points generally left
         # tag too oblique
         relative_theta = cant_see_it
     else: # tag is to left of cam
       relative_theta = cant_see_it
-  elif math.isclose(tag_angle_in_cam_frame, np.pi): # cam points left
+  elif math.isclose(abs(cam_theta), np.pi): # cam points left
     if tag[0] <= cam[0]: # tag is left of cam
       if tag_theta > -np.pi/2 or tag_theta < np.pi/2: # tag points right-ish
         # tag too oblique
@@ -120,6 +120,9 @@ def tag_in_world_to_tag_in_camera(cam, tag) :
     sy = cam[1] + np.sin(cam_theta - np.pi/2) 
 
     # slope of line perpendicular to camera Z axis
+    if math.isclose(sx - cam[0],0):
+      print("this shouldn't happen")
+
     m = (sy - cam[1]) / (sx - cam[0])
 
     # the sign of this value indicates which side of the line the camera can see

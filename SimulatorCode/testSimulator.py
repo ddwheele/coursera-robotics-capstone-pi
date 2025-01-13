@@ -193,8 +193,8 @@ def test_tag_in_world_to_tag_in_camera():
     assert tag_angle_is_correct(ans, [0, -1, cant_see_it])
     
     ans = mu.tag_in_world_to_tag_in_camera(camNeg180, tag01)
-    print(ans)
-    assert tag_angle_is_correct(ans, [-1, 0, mu.to_rad(-90+zero_angle)])
+    # actually it's at a right angle to the camera
+    assert tag_angle_is_correct(ans, [-1, 0, cant_see_it])
     
     ans = mu.tag_in_world_to_tag_in_camera(camNeg180, tag55)
     assert tag_angle_is_correct(ans, [-5, -5, cant_see_it])
@@ -206,8 +206,9 @@ def test_tag_in_world_to_tag_in_camera():
     assert tag_angle_is_correct(ans, [-3, -1, cant_see_it])
     
     ans = mu.tag_in_world_to_tag_in_camera(camNeg180_minus3, tag01)
-    assert tag_angle_is_correct(ans, [-4, 0, mu.to_rad(-90+zero_angle)])
-    
+    # actually it's at 90 deg to the camera
+    assert tag_angle_is_correct(ans, [-4, 0, cant_see_it])
+
     ans = mu.tag_in_world_to_tag_in_camera(camNeg180_minus3, tag55)
     assert tag_angle_is_correct(ans, [-8, -5, cant_see_it])
 
