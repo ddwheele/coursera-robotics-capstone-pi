@@ -79,13 +79,13 @@ def test_tag_in_camera_to_camera_in_world():
   ans = mu.tag_in_camera_to_camera_in_world(tag2Neg2_Neg45, tag_straight_at_camera_root2)
   assert triplet_is_correct(ans, [1,-1,mu.to_rad(-45)])
 
-  # # East to north
-  # tag_45_to_cam_11 = [1, 1, mu.to_rad(45)]
-  # ans = mu.tag_in_camera_to_camera_in_world(tag22_45,tag_45_to_cam_11)
-  # print(ans)
-  # assert triplet_is_correct(ans, [1,1,0])
+  # Cam north, tag north-east
+  cam_11_45 = [-1, 1, mu.to_rad(45)]
+  ans = mu.tag_in_camera_to_camera_in_world(tag22_45,cam_11_45)
+  print(ans)
+  assert triplet_is_correct(ans, [1,1,mu.to_rad(90)])
 
-  print("Passed test_tag_in_camera_to_robot_in_world!")
+  print("Passed test_tag_in_camera_to_camera_in_world!")
 
 #   world coordinates: x = right, y = forward, theta around vertical z (right-handed)
 #   camera coordinates: x = left, z = forward (left-handed)
