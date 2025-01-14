@@ -220,48 +220,56 @@ def test_camera_in_world_to_robot_in_world():
 
   # no translation, no rotation
   t_cam_to_body = [4, 0, 0]
-  camera00_0 = [4, 0, 0]
-  ans = mu.camera_in_world_to_robot_in_world(camera00_0, t_cam_to_body)
+  camera40_0 = [4, 0, 0]
+  ans = mu.camera_in_world_to_robot_in_world(camera40_0, t_cam_to_body)
   assert np.allclose(ans, [0,0,0])
   
-  camera00_90 = [0, 4, mu.to_rad(90)]
-  ans = mu.camera_in_world_to_robot_in_world(camera00_90, t_cam_to_body)
+  camera04_90 = [0, 4, mu.to_rad(90)]
+  ans = mu.camera_in_world_to_robot_in_world(camera04_90, t_cam_to_body)
   assert np.allclose(ans, [0,0,mu.to_rad(90)])
  
-  camera00_45 = [4/root2, 4/root2, mu.to_rad(45)]
-  ans = mu.camera_in_world_to_robot_in_world(camera00_45, t_cam_to_body)
+  camera2root2_45 = [4/root2, 4/root2, mu.to_rad(45)]
+  ans = mu.camera_in_world_to_robot_in_world(camera2root2_45, t_cam_to_body)
   assert np.allclose(ans, [0,0,mu.to_rad(45)])
 
-  camera50_0 = [9, 0, 0]
-  ans = mu.camera_in_world_to_robot_in_world(camera50_0, t_cam_to_body)
+  camera90_0 = [9, 0, 0]
+  ans = mu.camera_in_world_to_robot_in_world(camera90_0, t_cam_to_body)
   assert np.allclose(ans, [5,0,0])
  
-  camera50_90 = [5, 4, mu.to_rad(90)]
-  ans = mu.camera_in_world_to_robot_in_world(camera50_90, t_cam_to_body)
+  camera54_90 = [5, 4, mu.to_rad(90)]
+  ans = mu.camera_in_world_to_robot_in_world(camera54_90, t_cam_to_body)
   assert np.allclose(ans, [5,0,mu.to_rad(90)])
  
-  camera05_0 = [4, 5, 0]
-  ans = mu.camera_in_world_to_robot_in_world(camera05_0, t_cam_to_body)
+  camera45_0 = [4, 5, 0]
+  ans = mu.camera_in_world_to_robot_in_world(camera45_0, t_cam_to_body)
   assert np.allclose(ans, [0,5,0])
 
-  camera05_90 = [0, 9, mu.to_rad(90)]
-  ans = mu.camera_in_world_to_robot_in_world(camera05_90, t_cam_to_body)
+  camera09_90 = [0, 9, mu.to_rad(90)]
+  ans = mu.camera_in_world_to_robot_in_world(camera09_90, t_cam_to_body)
   assert np.allclose(ans, [0,5,mu.to_rad(90)])
 
-  camera55_45 = [5+4/root2, 5+4/root2, mu.to_rad(45)]
-  ans = mu.camera_in_world_to_robot_in_world(camera55_45, t_cam_to_body)
+  camera52root2_45 = [5+4/root2, 5+4/root2, mu.to_rad(45)]
+  ans = mu.camera_in_world_to_robot_in_world(camera52root2_45, t_cam_to_body)
   assert np.allclose(ans, [5,5,mu.to_rad(45)])
 
   t_cam_to_body = [6,2,0]
+  camera00_0 = [0, 0, 0]
   ans = mu.camera_in_world_to_robot_in_world(camera00_0, t_cam_to_body)
-  assert np.allclose(ans, [6, 2, 0])
-
+  assert np.allclose(ans, [-6, -2, 0])
+  
+  camera00_90 = [0, 0, mu.to_rad(90)]
   ans = mu.camera_in_world_to_robot_in_world(camera00_90, t_cam_to_body)
-  assert np.allclose(ans, [-2, 6, mu.to_rad(90)])
+  assert np.allclose(ans, [2, -6, mu.to_rad(90)])
 
   camera00_180 = [0,0,mu.to_rad(180)]
   ans = mu.camera_in_world_to_robot_in_world(camera00_180, t_cam_to_body)
-  assert np.allclose(ans, [-6, -2, mu.to_rad(180)])
+  assert np.allclose(ans, [6, 2, mu.to_rad(180)])
+
+  camera00_45 = [0,0,mu.to_rad(45)]
+  ans = mu.camera_in_world_to_robot_in_world(camera00_45, t_cam_to_body)
+  print( [-6/root2-root2, -6/root2+root2, mu.to_rad(45)])
+  assert np.allclose(ans, [root2-6/root2, -6/root2-root2, mu.to_rad(45)])
+
 
   print("Passed test_camera_in_world_to_robot_in_world!")
 
