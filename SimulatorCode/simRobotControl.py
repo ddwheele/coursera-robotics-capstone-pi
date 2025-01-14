@@ -17,9 +17,8 @@ import time
 from RobotSim import RobotSim
 import matplotlib.pyplot as plt
 
-# TODO for student: User files, uncomment as completed
 #from MyShortestPath import dijkstras
-#from KalmanFilter import KalmanFilter
+from KalmanFilter import KalmanFilter
 from DiffDriveController import DiffDriveController
 
 class RobotControl(object):
@@ -56,17 +55,14 @@ class RobotControl(object):
       (not used in simulation)
     """
 
-    # TODO for student: Comment this when running on the robot 
     self.robot_sim = RobotSim(world_map, occupancy_map, pos_init, pos_goal,
                               max_speed, max_omega, x_spacing, y_spacing, t_cam_to_body)
        
-        # Uncomment as completed
-    #self.kalman_filter = KalmanFilter(world_map)
+    self.kalman_filter = KalmanFilter(world_map)
     self.diff_drive_controller = DiffDriveController(max_speed, max_omega)
 
   def process_measurements(self):
     """ 
-    YOUR CODE HERE
     Main loop of the robot - where all measurements, control, and esimtaiton
     are done. This function is called at 60Hz
     """
@@ -116,7 +112,6 @@ def main(args):
                               max_vel, max_omega, x_spacing, y_spacing,
                               t_cam_to_body)
 
-  # TODO for student: Comment this when running on the robot 
   # Run the simulation
   while not robotControl.robot_sim.done and plt.get_fignums():
     robotControl.process_measurements()
@@ -126,7 +121,6 @@ def main(args):
   plt.ioff()
   plt.show()
 
-  # TODO for student: Use this to run the interface on the robot
   # Call process_measurements at 60Hz
   """r = rospy.Rate(60)
   while not rospy.is_shutdown():

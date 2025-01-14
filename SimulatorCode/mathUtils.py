@@ -142,7 +142,7 @@ def tag_in_world_to_tag_in_camera(cam, tag) :
 #   rob: robot position in world coordinates (x,y,theta)
 #   t_cam_to_body: position of camera in body frame (x,y,z)
 # Output:
-#   camera position in world coordinates (x,y,0) (pretend everything is head-on, may implement theta later)
+#   camera position in world coordinates (x,y,theta)
 def robot_in_world_to_camera_in_world(rob, t_cam_to_body):
   # rotation matrix (robot in world)
   ct = np.cos(rob[2])
@@ -155,3 +155,13 @@ def robot_in_world_to_camera_in_world(rob, t_cam_to_body):
   
   ans = [rob[0] + rotated_cam[0], rob[1]+rotated_cam[1], rob[2]]
   return ans
+
+# Input:
+#   cam: cam position in world coordinates (x,y,theta)
+#   t_cam_to_body: position of camera in body frame (x,y,z)
+# Output:
+#   robot position in world coordinates (x,y,theta) 
+def camera_in_world_to_robot_in_world(cam, t_cam_to_body):
+  inverse = [-t_cam_to_body[0], -t_cam_to_body[1], -t_cam_to_body[2]]
+  return robot_in_world_to_camera_in_world(cam, inverse)
+  

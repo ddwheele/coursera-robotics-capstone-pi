@@ -1,11 +1,7 @@
 #!/usr/bin/python
 import numpy as np
-# import matplotlib.pyplot as plt
-# from matplotlib import animation
-# from matplotlib import patches
-# #import pylab
-# import time
-# import math
+
+import mathUtils as mu
 
 class KalmanFilter:
   """
@@ -116,6 +112,20 @@ class KalmanFilter:
     """
     # First, find where we have measured the robot to be.
     # For now, just use the first April Tag to calculate this.
+    tag_cam = z_t[0]
+    # tag_cam_x = tag_cam[0]
+    # tag_cam_y = tag_cam[1]
+    # tag_cam_theta = tag_cam[2]
+    tag_number = tag_cam[3]
+
+    # find the real coordinates of that tag
+    tag_world = self.world_map[tag_number-1]
+    # tag_world_x = tag_world[0]
+    # tag_world_y = tag_world[1]
+    # tag_world_theta = tag_world[2]
+
+    cam_in_world = mu.tag_in_camera_to_camera_in_world(tag_world, tag_cam)
+
 
     
 

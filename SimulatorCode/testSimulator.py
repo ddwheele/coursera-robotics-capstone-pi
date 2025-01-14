@@ -82,7 +82,6 @@ def test_tag_in_camera_to_camera_in_world():
   # Cam north, tag north-east
   cam_11_45 = [-1, 1, mu.to_rad(45)]
   ans = mu.tag_in_camera_to_camera_in_world(tag22_45,cam_11_45)
-  print(ans)
   assert triplet_is_correct(ans, [1,1,mu.to_rad(90)])
 
   print("Passed test_tag_in_camera_to_camera_in_world!")
@@ -216,6 +215,56 @@ def test_tag_in_world_to_tag_in_camera():
     assert tag_angle_is_correct(ans, [-0.25, 1, mu.to_rad(zero_angle)])
     print("Passed test_tag_in_world_to_tag_in_camera!")
 
+def test_camera_in_world_to_robot_in_world():
+  root2 = np.sqrt(2)
+
+  # no translation, no rotation
+  t_cam_to_body = [4, 0, 0]
+  camera00_0 = [4, 0, 0]
+  ans = mu.camera_in_world_to_robot_in_world(camera00_0, t_cam_to_body)
+  assert np.allclose(ans, [0,0,0])
+  
+  camera00_90 = [0, 4, mu.to_rad(90)]
+  ans = mu.camera_in_world_to_robot_in_world(camera00_90, t_cam_to_body)
+  assert np.allclose(ans, [0,0,mu.to_rad(90)])
+ 
+  camera00_45 = [4/root2, 4/root2, mu.to_rad(45)]
+  ans = mu.camera_in_world_to_robot_in_world(camera00_45, t_cam_to_body)
+  assert np.allclose(ans, [0,0,mu.to_rad(45)])
+
+  camera50_0 = [9, 0, 0]
+  ans = mu.camera_in_world_to_robot_in_world(camera50_0, t_cam_to_body)
+  assert np.allclose(ans, [5,0,0])
+ 
+  camera50_90 = [5, 4, mu.to_rad(90)]
+  ans = mu.camera_in_world_to_robot_in_world(camera50_90, t_cam_to_body)
+  assert np.allclose(ans, [5,0,mu.to_rad(90)])
+ 
+  camera05_0 = [4, 5, 0]
+  ans = mu.camera_in_world_to_robot_in_world(camera05_0, t_cam_to_body)
+  assert np.allclose(ans, [0,5,0])
+
+  camera05_90 = [0, 9, mu.to_rad(90)]
+  ans = mu.camera_in_world_to_robot_in_world(camera05_90, t_cam_to_body)
+  assert np.allclose(ans, [0,5,mu.to_rad(90)])
+
+  camera55_45 = [5+4/root2, 5+4/root2, mu.to_rad(45)]
+  ans = mu.camera_in_world_to_robot_in_world(camera55_45, t_cam_to_body)
+  assert np.allclose(ans, [5,5,mu.to_rad(45)])
+
+  t_cam_to_body = [6,2,0]
+  ans = mu.camera_in_world_to_robot_in_world(camera00_0, t_cam_to_body)
+  assert np.allclose(ans, [6, 2, 0])
+
+  ans = mu.camera_in_world_to_robot_in_world(camera00_90, t_cam_to_body)
+  assert np.allclose(ans, [-2, 6, mu.to_rad(90)])
+
+  camera00_180 = [0,0,mu.to_rad(180)]
+  ans = mu.camera_in_world_to_robot_in_world(camera00_180, t_cam_to_body)
+  assert np.allclose(ans, [-6, -2, mu.to_rad(180)])
+
+  print("Passed test_camera_in_world_to_robot_in_world!")
+
 def test_robot_in_world_to_camera_in_world():
   root2 = np.sqrt(2)
 
@@ -228,7 +277,7 @@ def test_robot_in_world_to_camera_in_world():
   robot00_90 = [0,0,mu.to_rad(90)]
   ans = mu.robot_in_world_to_camera_in_world(robot00_90, t_cam_to_body)
   assert np.allclose(ans, [0, 4, mu.to_rad(90)])
- 
+
   robot00_45 = [0,0,mu.to_rad(45)]
   ans = mu.robot_in_world_to_camera_in_world(robot00_45, t_cam_to_body)
   assert np.allclose(ans, [4/root2, 4/root2, mu.to_rad(45)])
@@ -236,11 +285,11 @@ def test_robot_in_world_to_camera_in_world():
   robot50_0 = [5,0,0]
   ans = mu.robot_in_world_to_camera_in_world(robot50_0, t_cam_to_body)
   assert np.allclose(ans, [9, 0, 0])
- 
+
   robot50_90 = [5,0,mu.to_rad(90)]
   ans = mu.robot_in_world_to_camera_in_world(robot50_90, t_cam_to_body)
   assert np.allclose(ans, [5, 4, mu.to_rad(90)])
- 
+
   robot05_0 = [0,5,0]
   ans = mu.robot_in_world_to_camera_in_world(robot05_0, t_cam_to_body)
   assert np.allclose(ans, [4, 5, 0])
@@ -270,6 +319,7 @@ def main(args):
   test_tag_in_camera_to_camera_in_world()
   test_tag_in_world_to_tag_in_camera()
   test_robot_in_world_to_camera_in_world()
+  test_camera_in_world_to_robot_in_world()
 
   print("PASSED ALL TESTS!")
 
