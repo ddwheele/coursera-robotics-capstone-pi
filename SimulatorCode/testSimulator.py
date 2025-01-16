@@ -267,10 +267,7 @@ def test_camera_in_world_to_robot_in_world():
 
   camera00_45 = [0,0,mu.to_rad(45)]
   ans = mu.camera_in_world_to_robot_in_world(camera00_45, t_cam_to_body)
-  print( [-6/root2-root2, -6/root2+root2, mu.to_rad(45)])
   assert np.allclose(ans, [root2-6/root2, -6/root2-root2, mu.to_rad(45)])
-
-
   print("Passed test_camera_in_world_to_robot_in_world!")
 
 def test_robot_in_world_to_camera_in_world():

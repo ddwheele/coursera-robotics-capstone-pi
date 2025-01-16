@@ -8,7 +8,7 @@ class KalmanFilter:
   Class to keep track of the estimate of the robots current state using the
   Kalman Filter
   """
-  def __init__(self, markers):
+  def __init__(self, markers, t_cam_to_body):
     """
     Initialize all necessary components for Kalman Filter, using the
     markers (AprilTags) as the map
@@ -18,11 +18,13 @@ class KalmanFilter:
             marker/AprilTag, theta gives its orientation, and id gives its
             unique id to identify which one you are seeing at any given
             moment
+    t_cam_to_body - position of camera in body frame (x,y,z)
     """
     self.markers = markers
+    self.t_cam_to_body = t_cam_to_body
     self.last_time = None # Used to keep track of time between measurements 
-    self.Q_t = np.array([1,0], [0,1]) # 2x2 uncertainty to add to covariance when predicting
-    self.R_t = np.array([1,0,0], [0,1,0], [0,0,1]) # 3x3 uncertainty of sensor noise
+    self.Q_t = np.array([[1,0], [0,1]]) # 2x2 uncertainty to add to covariance when predicting
+    self.R_t = np.array([[1,0,0], [0,1,0], [0,0,1]]) # 3x3 uncertainty of sensor noise
     # Initialize position to origin, with a huge covariance
     self.x_t = np.zeros(3) # estimated position
     self.P_t = np.full((3,3), 10e6) # initial covariance matrix
@@ -107,34 +109,33 @@ class KalmanFilter:
         robot, and the unique id of the marker, which you can find the
         corresponding marker from your map
     Outputs:
-    predicted_state - a 3 by 1 numpy array of the updated state
+    predicted_state - a 3 by 1 numpy array of the updated state (x, y, theta)
     predicted_covariance - a 3 by 3 numpy array of the updated covariance
     """
     # First, find where we have measured the robot to be.
     # For now, just use the first April Tag to calculate this.
     tag_cam = z_t[0]
-    # tag_cam_x = tag_cam[0]
-    # tag_cam_y = tag_cam[1]
-    # tag_cam_theta = tag_cam[2]
     tag_number = tag_cam[3]
 
     # find the real coordinates of that tag
     tag_world = self.world_map[tag_number-1]
-    # tag_world_x = tag_world[0]
-    # tag_world_y = tag_world[1]
-    # tag_world_theta = tag_world[2]
 
     cam_in_world = mu.tag_in_camera_to_camera_in_world(tag_world, tag_cam)
 
-
+    robot_in_world = mu.camera_in_world_to_robot_in_world(cam_in_world, self.t_cam_to_body)
     
-
     # Compute Kalman gain:   
     #
     #               ( dh )T   [( dh )         ( dh )T       ]-1
     #   K_t = P_t * (____)  * [(____)*Sigma_t*(____)  + R_t ]
     #               ( dx )    [( dx )         ( dx )        ]
     #
+    # K_t = Kalman gain
+    # P_t = covariance matrix
+    # h() = measurement function
+    # Sigma_t = covariance matrix
+    # R_t = sensor noise uncertainty
+    # 
     # Our measurement model is just z_t = x_t + noise, so dh/dx is the identity matrix
     #            
     #   K_t = P_t * [P_t + R_t]^(-1)
@@ -145,8 +146,13 @@ class KalmanFilter:
     # Compute best estimate location:
     # 
     #   mu = mu_hat + K * (z_t - mu_hat)
-    #    
-    mu = self.x_t + K * (z_t - self.x_t)
+    #   
+    # mu = best estimate location
+    # mu_hat = estimated location
+    # K = Kalman gain
+    # z_t = measured location (so robot_in_world, not z_t )
+    #
+    mu = self.x_t + K * (robot_in_world - self.x_t)
 
     # Update the covariance:
     #
@@ -154,6 +160,11 @@ class KalmanFilter:
     #   Sigma = P_t - K * (____) * P_t
     #                     ( dx )
     #
+    # Sigma = updated covariance
+    # P_t = current covariance
+    # K = Kalman gain
+    # h() = measurement function
+
     # dh/dx is still identity
     #
     #   Sigma = P_t - K * P_t
@@ -186,11 +197,11 @@ class KalmanFilter:
     x_t - current estimate of the state
     """
     # Check if an IMU measurement came in
-    if imu_meas not None:
+    if imu_meas is not None:
       self.prediction(v, imu_meas)
 
     # Check if April Tag measurment came in
-    if z_t not None:
+    if z_t is not None:
       self.update(z_t)
  
     return self.x_t

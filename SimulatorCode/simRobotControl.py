@@ -54,30 +54,28 @@ class RobotControl(object):
     t_cam_to_body - numpy transformation between the camera and the robot
       (not used in simulation)
     """
-
     self.robot_sim = RobotSim(world_map, occupancy_map, pos_init, pos_goal,
                               max_speed, max_omega, x_spacing, y_spacing, t_cam_to_body)
        
-    self.kalman_filter = KalmanFilter(world_map)
+    self.kalman_filter = KalmanFilter(world_map, t_cam_to_body)
     self.diff_drive_controller = DiffDriveController(max_speed, max_omega)
+    self.previous_velocity = 0
 
   def process_measurements(self):
     """ 
-    Main loop of the robot - where all measurements, control, and esimtaiton
+    Main loop of the robot - where all measurements, control, and estimaiton
     are done. This function is called at 60Hz
     """
     meas = self.robot_sim.get_measurements()
     imu_meas = self.robot_sim.get_imu()
 
-    if meas is None:
-      #self.robot_sim.command_velocity(0,0)
-      return
+    est_state = self.kalman_filter.step_filter(self.previous_velocity, imu_meas, meas)
+    self.robot_sim.set_est_state(est_state)
 
-    print("meas length = %d" % len(meas))
     if len(meas) > 0:
- 
+      
       theta = meas[0][2] * 180.0 / np.pi
-      print("tag=%d, x=%.2f, z=%.2f, theta=%.2f degrees" % (meas[0][3], meas[0][0], meas[0][1], theta))
+#      print("tag=%d, x=%.2f, z=%.2f, theta=%.2f degrees" % (meas[0][3], meas[0][0], meas[0][1], theta))
 
       tag = np.array([ meas[0][0], meas[0][1] ])
 
@@ -85,8 +83,10 @@ class RobotControl(object):
 
       if not control[2]:
         self.robot_sim.command_velocity(control[0], control[1])
+        self.previous_velocity=control[0]
       else:
         self.robot_sim.command_velocity(0,0)
+        self.previous_velocity=0
 
     return
     
@@ -131,5 +131,3 @@ def main(args):
 
 if __name__ == "__main__":
   main(sys.argv)
-
-

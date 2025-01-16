@@ -81,10 +81,13 @@ def tag_in_world_to_tag_in_camera(cam, tag) :
   # define fake camera as X=real cam z and Y=real cam x
   # fake camera is right-handed coordinates
   # cRw = columns are world axes expressed in camera frame
-  cRw = np.array([[ np.cos(cam_theta), np.sin(cam_theta)],\
-                  [-np.sin(cam_theta), np.cos(cam_theta)]])
-
+  cRw = np.array([[ np.cos(cam_theta), np.sin(cam_theta)],[-np.sin(cam_theta), np.cos(cam_theta)]])
+  cRw1 = np.array([[ 1,2],[3,4]])
   # cP = tag in camera frame
+  print(cRw)
+  print(wP)
+  print(cRw.shape)
+  print(wP.shape)
   cP = np.matmul(cRw, wP) + cTw
 
   # we are adding pi/2 here because April tag library reports 90 deg if tag x aligns 
