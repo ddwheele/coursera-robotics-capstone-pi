@@ -11,6 +11,7 @@ import yaml
 import numpy as np
 
 import sys
+sys.path.append('../catkin_ws/src/robot_control/src/')
 
 import time
 

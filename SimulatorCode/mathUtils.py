@@ -168,3 +168,30 @@ def camera_in_world_to_robot_in_world(cam, t_cam_to_body):
   inverse = [-t_cam_to_body[0], -t_cam_to_body[1], -t_cam_to_body[2]]
   return robot_in_world_to_camera_in_world(cam, inverse)
   
+# #   tag position in camera coordinates (x,y,0) (pretend everything is head-on, may implement theta later)
+# def tag_in_world_to_tag_in_camera(cam, tag):
+#     camx = cam[0]
+#     camy = cam[1]
+#     theta = cam[2] + np.pi/2.0
+    
+#     # want theta between pi and -pi
+#     if theta > np.pi:
+#         theta = theta - np.pi
+#     elif theta < -np.pi:
+#         theta = theta + np.pi
+    
+#     ct = np.cos(theta)
+#     st = np.sin(theta)
+    
+#     rotmat = np.array([[ct, st, 0], [-st, ct, 0], [0,0,1]], dtype=object)
+        
+#     # transformed origin offset
+#     cam_origin = np.array([camx, camy, 1])
+#     transformed_origin = np.matmul(rotmat, cam_origin)
+    
+#     tag_world = np.array([tag[0], tag[1], 1])
+    
+#     tag_camera = np.matmul(rotmat, tag_world)
+        
+#     return [tag_camera[1]-transformed_origin[1], tag_camera[0]-transformed_origin[0], 0]  
+

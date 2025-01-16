@@ -301,8 +301,17 @@ class RobotSim(object):
             # tag position in world frame
             tag_world = self.markers[i] # tag = [x,y,theta]
             
+
             # tag position in camera frame
             tag_camera = mu.tag_in_world_to_tag_in_camera(camera_world, tag_world)
+# =======
+#             # robot position in world frame
+#             robot_world  = np.array([self.__x_gt[0,0],self.__x_gt[1,0] ,self.__x_gt[1,0]] ) # (take x=[0,0], y=[1,0], and w=[2,0])
+
+#             # tag position in camera frame, if camera frame were coincident with body frame
+#             # (ie, tag position in body frame, but with the axes rotated like the camera frame
+#             tag_camera = mu.tag_in_world_to_tag_in_camera(robot_world, tag_world)
+# >>>>>>> Stashed changes
 
             # check if we can see it
             # calculate view angle
