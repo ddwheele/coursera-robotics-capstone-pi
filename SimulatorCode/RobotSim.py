@@ -273,7 +273,6 @@ class RobotSim(object):
         # robot position in world frame
         robot_world  = self.__x_gt # (take x=[0,0], y=[1,0], and w=[2,0])
 
-       
         # camera position in world frame
         camera_world = mu.robot_in_world_to_camera_in_world(robot_world, self.__t_cam_to_body)
 
@@ -290,7 +289,7 @@ class RobotSim(object):
             view_angle = np.arctan2(tag_camera[0], tag_camera[1])
             
             if abs(view_angle) < self.__view_half_angle \
-            and abs(tag_camera[2]) < np.pi/3 \
+            and np.pi/3 < tag_camera[2] and tag_camera[2] < 2*np.pi/3 \
             and tag_camera[1] < 2:
                 # we can see it
                 self.__visible_markers[i] = True
