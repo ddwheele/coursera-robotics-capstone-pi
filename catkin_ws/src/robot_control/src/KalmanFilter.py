@@ -50,11 +50,9 @@ class KalmanFilter:
       return (self.x_t, self.P_t)
     print("======= IMU ============")
     print(imu_meas)
-    print(imu_meas[4])
-    print(imu_meas[4,0])
-    print(imu_meas[4][0])
 
     dt = imu_meas[4][0] - self.last_time # time interval
+    print("dt = %f" %(dt))
 
     omega = imu_meas[3,0] # angular velocity
     theta = self.x_t[2] # predicted robot orientation, for legibility
@@ -63,23 +61,15 @@ class KalmanFilter:
     cos_t = np.cos(theta)
     sin_t = np.sin(theta)
 
-    # Calculate new pose prediction:S
+    # Calculate new pose prediction
     #
     #                           [ v*cos(theta) ]        [ n_v*cos(theta) ]
     #   mu_hat = u_(t-1) + dt * [ v*sin(theta) ] + dt * [ n_v*sin(theta) ] = f(x,omega,noise)
     #                           [ omega        ]        [ n_w            ]
     #
-    print("=========================")
-    print(v)
-    print(cos_t)
-    print(omega)
-    print(dt)
-    print(self.x_t)
-
     a = self.x_t
     b = dt * np.array([v*cos_t, v*sin_t, omega])
     c = dt * np.array([n_v*cos_t, n_v*sin_t, n_w])
-    print(b)
     mu_hat = a + b + c
 
    # mu_hat = self.x_t + dt * np.array([[v*cos_t], [v*sin_t], [omega]]) + dt * np.array([[n_v*cos_t], [n_v*sin_t], [n_w]])
@@ -100,8 +90,6 @@ class KalmanFilter:
     #    ____ = dt * [ sin(theta) 0 ]
     #     dn         [         0  1 ]
     #
-
-
     dfdx = np.eye(3) + dt * np.array([[0, 0, -v*sin_t], [0, 0, v*cos_t], [0, 0, 0]])
     dfdn = dt * np.array([[cos_t, 0], [sin_t, 0], [0, 1]])
 

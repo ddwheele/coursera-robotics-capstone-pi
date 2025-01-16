@@ -250,25 +250,6 @@ class RobotSim(object):
         return np.array([[np.cos(theta), -np.sin(theta)],
                          [np.sin(theta),  np.cos(theta)]])
 
-    def __H(self,X):
-        """
-        Given an X = [x,y,theta], create associated transform
-        Inputs: X - an array of size 3 with [x,y,theta] in it
-        Output: H - a 3 by 3 numpy array of homogeneous representation rotation
-                    and translation
-        """
-        return np.array([[np.cos(X[2]), -np.sin(X[2]), X[0]],
-                         [np.sin(X[2]),  np.cos(X[2]), X[1]],
-                         [         0.0,           0.0,  1.0]])
-    def __vectH(self,H):
-        """
-        Given H created from H(X), extract the X
-        Inputs: H - a 3 by 3 numpy array of homogeneous representation rotation
-                    and translation
-        Outpus: X - an array of size 3 of [x,y,theta] of transformation
-        """
-        return [H[0,2],H[1,2],math.atan2(H[1,0],H[0,0])]
-
     def get_measurements(self):
         """
         Returns a list of lists of visible landmarks or None if not enough time has passed
@@ -317,6 +298,9 @@ class RobotSim(object):
                 
                 meas_i[0:3] = meas_i[0:3] + np.array([np.random.normal(0, self.__image_noise)])
                 meas.append(meas_i.tolist())
+        
+        print("I see these tags:")
+        print(meas)
         return meas
 
     def set_est_state(self, est_state):
