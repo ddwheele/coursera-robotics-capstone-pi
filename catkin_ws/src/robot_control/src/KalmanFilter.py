@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import numpy as np
 
-import mathUtils as mu
+import mathUtils as mutil
 
 class KalmanFilter:
   """
@@ -121,14 +121,14 @@ class KalmanFilter:
     # First, find where we have measured the robot to be.
     # For now, just use the first April Tag to calculate this.
     tag_cam = z_t[0]
-    tag_number = tag_cam[3]
+    tag_number = int(tag_cam[3])
 
     # find the real coordinates of that tag
-    tag_world = self.world_map[tag_number-1]
+    tag_world = self.markers[tag_number-1]
 
-    cam_in_world = mu.tag_in_camera_to_camera_in_world(tag_world, tag_cam)
+    cam_in_world = mutil.tag_in_camera_to_camera_in_world(tag_world, tag_cam)
 
-    robot_in_world = mu.camera_in_world_to_robot_in_world(cam_in_world, self.t_cam_to_body)
+    robot_in_world = mutil.camera_in_world_to_robot_in_world(cam_in_world, self.t_cam_to_body)
     
     # Compute Kalman gain:   
     #
