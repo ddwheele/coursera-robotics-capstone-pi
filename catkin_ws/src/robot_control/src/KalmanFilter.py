@@ -201,7 +201,7 @@ class KalmanFilter:
       self.prediction(v, imu_meas)
 
     # Check if April Tag measurment came in
-    if z_t is not None:
+    if z_t is not None and len(z_t) > 0:
       self.update(z_t)
  
     return self.x_t

@@ -51,6 +51,13 @@ def tag_in_camera_to_camera_in_world(tag_world, tag_camera):
 
   return [wP[0], wP[1], cam_world_angle]
 
+def ensure_number(value):
+  # if isinstance(value, np.float64):
+  #   return float(value)
+  if isinstance(value, np.ndarray) and len(value) == 1:
+    return value[0]
+  return value
+
 # Input:
 #   cam: camera position in world coordinates (x, y, theta = view axis)
 #   tag: tag position in world coordinates (x,y, theta = out back of tag)
@@ -60,18 +67,25 @@ def tag_in_camera_to_camera_in_world(tag_world, tag_camera):
 #   camera coordinates are x = left, z = forward = view axis (left-handed)
 def tag_in_world_to_tag_in_camera(cam, tag) :
   cant_see_it = 5
+  tag_x = ensure_number(tag[0])
+  tag_y = ensure_number(tag[1])
+  tag_theta = ensure_number(tag[2])
+
+  cam_x = ensure_number(cam[0])
+  cam_y = ensure_number(cam[1])
+  cam_theta = ensure_number(cam[2])
+
   # To transform tag P in world coordinates to camera coordinates:
   #   cP = cRw * wP + cTw
   # wP = tag in world frame
-  wP =  np.array([[ tag[0]], [ tag[1]]])
+  wP =  np.array([[ tag_x], [ tag_y]])
 
   # rho = distance from world origin to camera origin
-  rho = np.sqrt( cam[0]**2 + cam[1]**2 )
+  rho = np.sqrt( cam_x**2 + cam_y**2 )
 
   # phi = angle between world x axis and line from world origin to camera
-  phi = np.arctan2(cam[1], cam[0])
+  phi = np.arctan2(cam_y, cam_x)
 
-  cam_theta = cam[2]
   # psi = cam_theta - phi
   psi = cam_theta - phi
 
@@ -81,34 +95,33 @@ def tag_in_world_to_tag_in_camera(cam, tag) :
   # define fake camera as X=real cam z and Y=real cam x
   # fake camera is right-handed coordinates
   # cRw = columns are world axes expressed in camera frame
-  cRw = np.array([[ np.cos(cam_theta), np.sin(cam_theta)],[-np.sin(cam_theta), np.cos(cam_theta)]])
-  cRw1 = np.array([[ 1,2],[3,4]])
+  ct = np.cos(cam_theta)
+  st = np.sin(cam_theta)
+
+  cRw= np.array([[ ct,st],[-st,ct]])
   # cP = tag in camera frame
-  print(cRw)
-  print(wP)
-  print(cRw.shape)
-  print(wP.shape)
+
   cP = np.matmul(cRw, wP) + cTw
 
   # we are adding pi/2 here because April tag library reports 90 deg if tag x aligns 
   # with our "fake camera" x
-  tag_angle_in_cam_frame = ensure_between(tag[2]-cam[2]+np.pi/2, -np.pi, np.pi)
+  tag_angle_in_cam_frame = ensure_between(tag_theta-cam_theta+np.pi/2, -np.pi, np.pi)
  
-  tag_theta = ensure_between( tag[2], -np.pi, np.pi)
+  tag_theta = ensure_between( tag_theta, -np.pi, np.pi)
 
   # make sure the tag is visible in the camera
   relative_theta = tag_angle_in_cam_frame
 
   # take care of positions where lines are vertical/horizontal
   if math.isclose(cam_theta,0): # cam points right
-    if tag[0] >= cam[0]: # tag is to right of cam
+    if tag_x >= cam_x: # tag is to right of cam
       if tag_theta < -np.pi/2 or tag_theta > np.pi/2 : # tag points generally left
         # tag too oblique
         relative_theta = cant_see_it
     else: # tag is to left of cam
       relative_theta = cant_see_it
   elif math.isclose(abs(cam_theta), np.pi): # cam points left
-    if tag[0] <= cam[0]: # tag is left of cam
+    if tag_x <= cam_x: # tag is left of cam
       if tag_theta > -np.pi/2 or tag_theta < np.pi/2: # tag points right-ish
         # tag too oblique
         relative_theta = cant_see_it
@@ -117,21 +130,21 @@ def tag_in_world_to_tag_in_camera(cam, tag) :
 
   else: # not vertical
         # zx, zy is directly in front of camera
-    zx = cam[0] + np.cos(cam_theta)
-    zy = cam[1] + np.sin(cam_theta) 
+    zx = cam_x + np.cos(cam_theta)
+    zy = cam_y + np.sin(cam_theta) 
 
     # sx, sy is directly to the right of the camera
-    sx = cam[0] + np.cos(cam_theta - np.pi/2)
-    sy = cam[1] + np.sin(cam_theta - np.pi/2) 
+    sx = cam_x + np.cos(cam_theta - np.pi/2)
+    sy = cam_y + np.sin(cam_theta - np.pi/2) 
 
     # slope of line perpendicular to camera Z axis
-    m = (sy - cam[1]) / (sx - cam[0])
+    m = (sy - cam_y) / (sx - cam_x)
 
     # the sign of this value indicates which side of the line the camera can see
-    visible = m*(zx - cam[0]) - (zy - cam[1])
+    visible = m*(zx - cam_x) - (zy - cam_y)
 
     # the sign of this value indicates which side of the line the tag is on
-    tag_side = m*(tag[0] - cam[0]) - (tag[1] - cam[1])
+    tag_side = m*(tag_x - cam_x) - (tag_y - cam_y)
 
     if math.isclose(tag_side,0) or (visible>0 and tag_side>0) or (visible<0 and tag_side<0):
       relative_theta = tag_angle_in_cam_frame
@@ -167,31 +180,4 @@ def robot_in_world_to_camera_in_world(rob, t_cam_to_body):
 def camera_in_world_to_robot_in_world(cam, t_cam_to_body):
   inverse = [-t_cam_to_body[0], -t_cam_to_body[1], -t_cam_to_body[2]]
   return robot_in_world_to_camera_in_world(cam, inverse)
-  
-# #   tag position in camera coordinates (x,y,0) (pretend everything is head-on, may implement theta later)
-# def tag_in_world_to_tag_in_camera(cam, tag):
-#     camx = cam[0]
-#     camy = cam[1]
-#     theta = cam[2] + np.pi/2.0
-    
-#     # want theta between pi and -pi
-#     if theta > np.pi:
-#         theta = theta - np.pi
-#     elif theta < -np.pi:
-#         theta = theta + np.pi
-    
-#     ct = np.cos(theta)
-#     st = np.sin(theta)
-    
-#     rotmat = np.array([[ct, st, 0], [-st, ct, 0], [0,0,1]], dtype=object)
-        
-#     # transformed origin offset
-#     cam_origin = np.array([camx, camy, 1])
-#     transformed_origin = np.matmul(rotmat, cam_origin)
-    
-#     tag_world = np.array([tag[0], tag[1], 1])
-    
-#     tag_camera = np.matmul(rotmat, tag_world)
-        
-#     return [tag_camera[1]-transformed_origin[1], tag_camera[0]-transformed_origin[0], 0]  
 
