@@ -73,7 +73,7 @@ class RobotControl(object):
     est_state = self.kalman_filter.step_filter(self.previous_velocity, imu_meas, meas)
     self.robot_sim.set_est_state(est_state)
 
-    if len(meas) > 0:
+    if meas is not None and len(meas) > 0:
       
       theta = meas[0][2] * 180.0 / np.pi
 #      print("tag=%d, x=%.2f, z=%.2f, theta=%.2f degrees" % (meas[0][3], meas[0][0], meas[0][1], theta))

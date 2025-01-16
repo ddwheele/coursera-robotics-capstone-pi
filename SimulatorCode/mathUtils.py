@@ -5,6 +5,13 @@ import math
 def to_rad(degrees):
   return degrees * np.pi / 180.0
 
+def ensure_number(value):
+  # if isinstance(value, np.float64):
+  #   return float(value)
+  if isinstance(value, np.ndarray) and len(value) == 1:
+    return value[0]
+  return value
+
 # Inputs:
 #   theta - an angle in radians
 #   low - lower bound (like 0 or -pi)
@@ -51,12 +58,7 @@ def tag_in_camera_to_camera_in_world(tag_world, tag_camera):
 
   return [wP[0], wP[1], cam_world_angle]
 
-def ensure_number(value):
-  # if isinstance(value, np.float64):
-  #   return float(value)
-  if isinstance(value, np.ndarray) and len(value) == 1:
-    return value[0]
-  return value
+
 
 # Input:
 #   cam: camera position in world coordinates (x, y, theta = view axis)

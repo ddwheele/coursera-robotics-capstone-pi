@@ -46,12 +46,17 @@ class KalmanFilter:
         covariance
     """
     if self.last_time is None:
-      self.last_time = imu_meas[4] # time from imu
+      self.last_time = imu_meas[4][0] # time from imu
       return (self.x_t, self.P_t)
+    print("======= IMU ============")
+    print(imu_meas)
+    print(imu_meas[4])
+    print(imu_meas[4,0])
+    print(imu_meas[4][0])
 
-    dt = imu_meas[4] - self.last_time # time interval
+    dt = imu_meas[4][0] - self.last_time # time interval
 
-    omega = imu_meas[3] # angular velocity
+    omega = imu_meas[3,0] # angular velocity
     theta = self.x_t[2] # predicted robot orientation, for legibility
     n_v = self.Q_t[0][0] # velocity noise
     n_w = self.Q_t[1][1] # omega noise
@@ -64,7 +69,20 @@ class KalmanFilter:
     #   mu_hat = u_(t-1) + dt * [ v*sin(theta) ] + dt * [ n_v*sin(theta) ] = f(x,omega,noise)
     #                           [ omega        ]        [ n_w            ]
     #
-    mu_hat = self.x_t + dt * np.array([[v*cos_t], [v*sin_t], [omega]]) + dt * np.array([[n_v*cos_t], [n_v*sin_t], [n_w]])
+    print("=========================")
+    print(v)
+    print(cos_t)
+    print(omega)
+    print(dt)
+    print(self.x_t)
+
+    a = self.x_t
+    b = dt * np.array([v*cos_t, v*sin_t, omega])
+    c = dt * np.array([n_v*cos_t, n_v*sin_t, n_w])
+    print(b)
+    mu_hat = a + b + c
+
+   # mu_hat = self.x_t + dt * np.array([[v*cos_t], [v*sin_t], [omega]]) + dt * np.array([[n_v*cos_t], [n_v*sin_t], [n_w]])
 
     # Calculate new covariance matrix (Sigma = P):
     # 
@@ -204,5 +222,7 @@ class KalmanFilter:
     if z_t is not None and len(z_t) > 0:
       self.update(z_t)
  
+    print("step_filter returning: ")
+    print(self.x_t)
     return self.x_t
  

@@ -399,14 +399,16 @@ class RobotSim(object):
 
         # Draw estimated position of robot (ghost version of robot)
         if self.__est_state is not None:
+            print(self.__est_state)
+            print(self.__est_state.shape)
             for s in range(len(self.__shapes)):
                 pts = np.zeros((len(self.__shapes[s]),2))
                 for k in range(len(self.__shapes[s])):
-                    cos = math.cos(self.__est_state[2,0])
-                    sin = math.sin(self.__est_state[2,0])
+                    cos = math.cos(self.__est_state[2])
+                    sin = math.sin(self.__est_state[2])
                     
-                    pts[k][0] = self.__est_state[0,0] + cos*self.__shapes[s][k][0] - sin*self.__shapes[s][k][1]
-                    pts[k][1] = self.__est_state[1,0] + sin*self.__shapes[s][k][0] + cos*self.__shapes[s][k][1]
+                    pts[k][0] = self.__est_state[0] + cos*self.__shapes[s][k][0] - sin*self.__shapes[s][k][1]
+                    pts[k][1] = self.__est_state[1] + sin*self.__shapes[s][k][0] + cos*self.__shapes[s][k][1]
                 self.__bot_parts_est[s].set_xy(pts)
             self.__est_state = None
 
