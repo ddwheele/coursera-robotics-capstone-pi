@@ -3,7 +3,7 @@
 import numpy as np
 
 class DiffDriveController():
-  EPSILON = 0.02 # 2 cm
+  EPSILON = 0.10 # 2 cm
   EPSILON_RADIANS = 0.0349066 # 2 degrees
 
   """
@@ -11,7 +11,7 @@ class DiffDriveController():
   """
   def __init__(self, max_speed, max_omega):
     self.__k_rho=1
-    self.__k_alpha=1.5
+    self.__k_alpha=3
 
     self.__k_beta=0
     self.__MAX_SPEED = max_speed
@@ -63,6 +63,11 @@ class DiffDriveController():
     delta_x = goal[0] - state[0]
     delta_y = goal[1] - state[1]
     theta = state[2]
+
+    print("Est State")
+    print(state)
+    print("Goal")
+    print(goal)
  
     if delta_x < DiffDriveController.EPSILON and delta_y < DiffDriveController.EPSILON:
       return (0, 0, True)
@@ -72,6 +77,8 @@ class DiffDriveController():
     beta = -theta - alpha
 
     v = self.__k_rho * rho
+    v = min(v, self.__MAX_SPEED)
     omega = self.__k_alpha * alpha + self.__k_beta * beta
-  #  print("\t\t\t\t\t\tv=%.2f m/s; theta=%.2f deg/s" % (v, omega*180.0/np.pi))
+    omega = min(omega, self.__MAX_OMEGA)
+    print("\t\t\t\t\t\tv=%.2f m/s; theta=%.2f deg/s" % (v, omega*180.0/np.pi))
     return (v, omega, False)

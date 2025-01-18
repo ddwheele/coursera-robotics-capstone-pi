@@ -318,8 +318,8 @@ class RobotSim(object):
         Called to update the simulation on every frame
         (where the simulating happens)
         """
-        print("== GROUND TRUTH POSITION")
-        print(self.__x_gt)
+        # print("== GROUND TRUTH POSITION")
+        # print(self.__x_gt)
         # Prep for the next frame
         #plt.hold(True)
         self.__frame_num += 1

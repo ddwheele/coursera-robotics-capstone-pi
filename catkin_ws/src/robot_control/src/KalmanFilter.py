@@ -48,16 +48,11 @@ class KalmanFilter:
     if self.last_time is None:
       self.last_time = imu_meas[4][0] # time from imu
       return (self.x_t, self.P_t)
-    # print("IMU")
-    # print(imu_meas)
 
     dt = imu_meas[4][0] - self.last_time # time interval
-
-
     omega = imu_meas[3,0] # angular velocity
     theta = self.x_t[2] # predicted robot orientation, for legibility
-   # n_v = self.Q_t[0][0] # velocity noise
-   # n_w = self.Q_t[1][1] # omega noise
+
     cos_t = np.cos(theta)
     sin_t = np.sin(theta)
  
@@ -70,17 +65,7 @@ class KalmanFilter:
     # But including noise directly in the state estimate makes no sense. Eliminating it.
     a = self.x_t
 
-    print("dt = %f" %(dt))
-    print("v = %f" %(v))
-    print("sin_t = %f" %(sin_t))
-
     b = dt * np.array([v*cos_t, v*sin_t, omega])
-    #c = dt * np.array([n_v*cos_t, n_v*sin_t, n_w])
-
-    print("propagated movement:")
-    print(b)
-   # print("noise term:")
-   # print(c)
 
     mu_hat = a + b 
 
@@ -113,8 +98,8 @@ class KalmanFilter:
 
     self.last_time = imu_meas[4]
 
-    print("Propagated Position:")
-    print(self.x_t)
+    # print("Propagated Position:")
+    # print(self.x_t)
     return (self.x_t, self.P_t)
 
   def update(self,z_t):
@@ -143,8 +128,8 @@ class KalmanFilter:
 
     robot_in_world = mutil.camera_in_world_to_robot_in_world(cam_in_world, self.t_cam_to_body)
     
-    print("Robot from tag:")
-    print(robot_in_world)
+    # print("Robot from tag:")
+    # print(robot_in_world)
 
     # Compute Kalman gain:   
     #
@@ -220,17 +205,17 @@ class KalmanFilter:
     """
     # Check if an IMU measurement came in
     if imu_meas is not None:
-      print("============ PREDICTION: ")
+      # print("============ PREDICTION: ")
       self.prediction(v, imu_meas)
 
     # Check if April Tag measurement came in
     if z_t is not None and len(z_t) > 0:
-      print("=========== UPDATING WITH MEASUREMENT: ")
+      # print("=========== UPDATING WITH MEASUREMENT: ")
       self.update(z_t)
  
-    print("FINAL ANSWER: ")
-    print(self.x_t)
-    print("============================================")
-    print("============================================")
+    # print("FINAL ANSWER: ")
+    # print(self.x_t)
+    # print("============================================")
+    # print("============================================")
     return self.x_t
  

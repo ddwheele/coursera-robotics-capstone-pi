@@ -27,7 +27,7 @@ class RobotControl(object):
   Class used to interface with the rover. Gets sensor measurements through ROS subscribers,
   and transforms them into the 2D plane, and publishes velocity commands.
   """
-  def __init__(self, world_map,occupancy_map, pos_init, pos_goal, max_speed, max_omega, x_spacing, y_spacing, t_cam_to_body):
+  def __init__(self, world_map,occupancy_map, pos_init, pos_goal, max_speed, max_omega, x_spacing, y_spacing, t_cam_to_body, goal_path):
     """
     Initialize the class
     Inputs: (all loaded from the parameter YAML file)
@@ -61,6 +61,8 @@ class RobotControl(object):
     self.kalman_filter = KalmanFilter(world_map, t_cam_to_body)
     self.diff_drive_controller = DiffDriveController(max_speed, max_omega)
     self.previous_velocity = 0
+    self.goal_path = goal_path
+    self.curr_goal_num = 0
 
   def process_measurements(self):
     """ 
@@ -73,21 +75,26 @@ class RobotControl(object):
     est_state = self.kalman_filter.step_filter(self.previous_velocity, imu_meas, meas)
     self.robot_sim.set_est_state(est_state)
 
-    if meas is not None and len(meas) > 0:
+    if self.curr_goal_num >= len(self.goal_path):
+      print("SWEET SWEET SUCCESS")
+      return
+
+    #if meas is not None and len(meas) > 0:
       
-      theta = meas[0][2] * 180.0 / np.pi
-#      print("tag=%d, x=%.2f, z=%.2f, theta=%.2f degrees" % (meas[0][3], meas[0][0], meas[0][1], theta))
+     # tag = np.array([ meas[0][0], meas[0][1] ])
+    goal = self.goal_path[self.curr_goal_num]
 
-      tag = np.array([ meas[0][0], meas[0][1] ])
+  #  control = self.diff_drive_controller.track_tag(goal)
+    control = self.diff_drive_controller.compute_vel(est_state, goal)
 
-      control = self.diff_drive_controller.track_tag(tag)
+    if not control[2]:
+      self.robot_sim.command_velocity(control[0], control[1])
+      self.previous_velocity=control[0]
+    else:
+      print("REACHED GOAL %d!!!!!!!!!!!!!!!!!" % (self.curr_goal_num))
+      self.curr_goal_num += 1
+     
 
-      if not control[2]:
-        self.robot_sim.command_velocity(control[0], control[1])
-        self.previous_velocity=control[0]
-      else:
-        self.robot_sim.command_velocity(0,0)
-        self.previous_velocity=0
 
     return
     
@@ -107,11 +114,12 @@ def main(args):
   t_cam_to_body = np.array(params['t_cam_to_body'])
   x_spacing = params['x_spacing']
   y_spacing = params['y_spacing']
+  goal_path = params['goal_path']
 
   # Intialize the RobotControl object
   robotControl = RobotControl(world_map, occupancy_map, pos_init, pos_goal,
                               max_vel, max_omega, x_spacing, y_spacing,
-                              t_cam_to_body)
+                              t_cam_to_body, goal_path)
 
   # Run the simulation
   while not robotControl.robot_sim.done and plt.get_fignums():

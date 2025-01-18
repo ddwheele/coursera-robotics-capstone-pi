@@ -24,6 +24,11 @@ t_cam_to_body:
 - [0.0]
 - [0.0]
 - [0.0]
+goal_path:
+- [0.5, 0.5]
+- [1.0, 0.5]
+- [1.0, 1.0]
+- [0.5, 1.5]
 world_map:
 # x, y, direction, tag number
 # 1.57 tag looks down (x axis through tag)
