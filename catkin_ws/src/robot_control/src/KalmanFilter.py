@@ -24,7 +24,7 @@ class KalmanFilter:
     self.t_cam_to_body = t_cam_to_body
     self.last_time = None # Used to keep track of time between measurements 
     self.Q_t = np.array([[0.05,0], [0,0.03]]) # 2x2 uncertainty to add to covariance when predicting
-    self.R_t = np.array([[.1,0,0], [0,.1,0], [0,0,0.1]]) # 3x3 uncertainty of sensor noise
+    self.R_t = np.array([[.01,0,0], [0,.01,0], [0,0,0.1]]) # 3x3 uncertainty of sensor noise
     # Initialize position to origin, with a huge covariance
     self.x_t = np.zeros(3) # estimated position
     self.P_t = np.eye(3) * 10e6 # initial covariance matrix
