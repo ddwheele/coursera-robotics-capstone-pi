@@ -187,10 +187,6 @@ def robot_in_world_to_camera_in_world(rob, t_cam_to_body):
   rotated_cam = np.matmul(rotmat, camera_hom)
   
   ans = [ensure_number(rob[0] + rotated_cam[0]),ensure_number(rob[1]+rotated_cam[1]), ensure_number(rob[2])]
-  print(ans[0])
-  print(ans[1])
-  print(ans[2])
-  print(ans)
   return ans
 
 # Input:

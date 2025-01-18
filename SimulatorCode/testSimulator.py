@@ -85,9 +85,7 @@ def test_tag_in_camera_to_camera_in_world():
   cam_in_world = [2, 1, mu.to_rad(45)]
   tag_in_world = [6, 2, mu.to_rad(60)]
   tag_in_cam =  mu.tag_in_world_to_tag_in_camera(cam_in_world, tag_in_world)
-  print(tag_in_cam)
   ans = mu.tag_in_camera_to_camera_in_world(tag_in_world, tag_in_cam)
-  print(ans)
   assert triplet_is_correct(ans, cam_in_world)
 
   # Sim start point
@@ -99,7 +97,6 @@ def test_tag_in_camera_to_camera_in_world():
   tag_world_sim = [0.5, 1, mu.to_rad(90)]
   tag_cam_sim = [-0.25, .9, mu.to_rad(ZERO_ANGLE_DEG)]
   ans = mu.tag_in_camera_to_camera_in_world(tag_world_sim,tag_cam_sim)
-  print(ans)
   assert triplet_is_correct(ans, [0.25,0.1,mu.to_rad(90)])
 
   tag_33_45 = [3,3, mu.to_rad(45)] # tag in world
