@@ -6,6 +6,9 @@ import numpy as np
 
 import mathUtils as mu
 
+# angle reported if tag exactly faces the camera
+ZERO_ANGLE_DEG = 90
+
 # All units are meters and radians unless otherwise specified
 
 # Input:
@@ -41,7 +44,7 @@ def triplet_is_correct(ans, truth):
 def test_tag_in_camera_to_camera_in_world():
   # East
   tag200 =  [2,0,0]
-  tag_straight_at_camera_1 = [0,1,mu.to_rad(90)]
+  tag_straight_at_camera_1 = [0,1,mu.to_rad(ZERO_ANGLE_DEG)]
   ans = mu.tag_in_camera_to_camera_in_world(tag200, tag_straight_at_camera_1)
   assert triplet_is_correct(ans, [1,0,0]) 
   # North
@@ -60,7 +63,7 @@ def test_tag_in_camera_to_camera_in_world():
   # North-east
   root2 = np.sqrt(2)
   tag22_45 = [2, 2, mu.to_rad(45)]
-  tag_straight_at_camera_root2 = [0,root2,mu.to_rad(90)]
+  tag_straight_at_camera_root2 = [0,root2,mu.to_rad(ZERO_ANGLE_DEG)]
   ans = mu.tag_in_camera_to_camera_in_world(tag22_45, tag_straight_at_camera_root2)
   assert triplet_is_correct(ans, [1,1,mu.to_rad(45)])
 
@@ -79,10 +82,22 @@ def test_tag_in_camera_to_camera_in_world():
   ans = mu.tag_in_camera_to_camera_in_world(tag2Neg2_Neg45, tag_straight_at_camera_root2)
   assert triplet_is_correct(ans, [1,-1,mu.to_rad(-45)])
 
-  # Cam north, tag north-east
-  cam_11_45 = [-1, 1, mu.to_rad(45)]
-  ans = mu.tag_in_camera_to_camera_in_world(tag22_45,cam_11_45)
-  assert triplet_is_correct(ans, [1,1,mu.to_rad(90)])
+  # Sim start point
+  tag_42_60 = [4, 2, mu.to_rad(60)] # tag in world
+  tag_cam_sim2 = [-root2/2, 3*root2/2, mu.to_rad(15 + ZERO_ANGLE_DEG)] # tag in camera
+  ans = mu.tag_in_camera_to_camera_in_world(tag_42_60, tag_cam_sim2)
+  assert triplet_is_correct(ans, [2,1,mu.to_rad(45)])
+
+  tag_world_sim = [0.5, 1, mu.to_rad(90)]
+  tag_cam_sim = [-0.25, .9, mu.to_rad(ZERO_ANGLE_DEG)]
+  ans = mu.tag_in_camera_to_camera_in_world(tag_world_sim,tag_cam_sim)
+  print(ans)
+  assert triplet_is_correct(ans, [0.25,0.1,mu.to_rad(90)])
+
+  tag_33_45 = [3,3, mu.to_rad(45)] # tag in world
+  tag_cam_sim3 = [root2/2, 3*root2/2, mu.to_rad(ZERO_ANGLE_DEG)] # tag in camera
+  ans = mu.tag_in_camera_to_camera_in_world(tag_33_45, tag_cam_sim3)
+  assert triplet_is_correct(ans, [2,1,mu.to_rad(45)])
 
   print("Passed test_tag_in_camera_to_camera_in_world!")
 
@@ -92,27 +107,26 @@ def test_tag_in_world_to_tag_in_camera():
     root2 = np.sqrt(2)
     root3 = np.sqrt(3)
     cant_see_it = 5 # angle > pi/2, indicates tag is not visible in camera
-    # angle reported if tag exactly faces the camera
-    zero_angle = 90
+
     
     # no translation, no rotation
     cam0 = [0,0,0] # camera faces east
     tag10 = [1,0,0] # front of tag faces origin (west)
     ans = mu.tag_in_world_to_tag_in_camera(cam0, tag10)
-    assert tag_angle_is_correct(ans, [0, 1, mu.to_rad(zero_angle)])
+    assert tag_angle_is_correct(ans, [0, 1, mu.to_rad(ZERO_ANGLE_DEG)])
     
     tag01 = [0, 1, mu.to_rad(90)] # tag faces origin
     ans = mu.tag_in_world_to_tag_in_camera(cam0, tag01)
-    assert tag_angle_is_correct(ans, [1, 0, mu.to_rad(90+zero_angle)])
+    assert tag_angle_is_correct(ans, [1, 0, mu.to_rad(90+ZERO_ANGLE_DEG)])
     
     tag55 = [5, 5, mu.to_rad(45)]
     ans = mu.tag_in_world_to_tag_in_camera(cam0, tag55)
-    assert tag_angle_is_correct(ans, [5, 5, mu.to_rad(45+zero_angle)])
+    assert tag_angle_is_correct(ans, [5, 5, mu.to_rad(45+ZERO_ANGLE_DEG)])
 
     # -90 deg rotation, no translation 
     camNeg90 = [0, 0, mu.to_rad(-90)]
     ans = mu.tag_in_world_to_tag_in_camera(camNeg90, tag10)
-    assert tag_angle_is_correct(ans, [1, 0, mu.to_rad(90+zero_angle)])
+    assert tag_angle_is_correct(ans, [1, 0, mu.to_rad(90+ZERO_ANGLE_DEG)])
 
     ans = mu.tag_in_world_to_tag_in_camera(camNeg90, tag01)
     assert tag_angle_is_correct(ans, [0, -1, cant_see_it])
@@ -145,18 +159,18 @@ def test_tag_in_world_to_tag_in_camera():
     # -45 deg rotation, no translation
     camNeg45 = [0, 0, mu.to_rad(-45)]
     ans = mu.tag_in_world_to_tag_in_camera(camNeg45, tag10)
-    assert tag_angle_is_correct(ans, [root2/2, root2/2, mu.to_rad(45+zero_angle)])
+    assert tag_angle_is_correct(ans, [root2/2, root2/2, mu.to_rad(45+ZERO_ANGLE_DEG)])
     
     ans = mu.tag_in_world_to_tag_in_camera(camNeg45, tag01)
     assert tag_angle_is_correct(ans, [root2/2, -root2/2, cant_see_it])
     
     ans = mu.tag_in_world_to_tag_in_camera(camNeg45, tag55)
-    assert tag_angle_is_correct(ans, [5*root2, 0, mu.to_rad(90+zero_angle)])
+    assert tag_angle_is_correct(ans, [5*root2, 0, mu.to_rad(90+ZERO_ANGLE_DEG)])
         
     # -30 deg rotation, no translation
     camNeg30 = [0, 0, mu.to_rad(-30)]
     ans = mu.tag_in_world_to_tag_in_camera(camNeg30, tag10)
-    assert tag_angle_is_correct(ans, [0.5, root3/2.0, mu.to_rad(30+zero_angle)])
+    assert tag_angle_is_correct(ans, [0.5, root3/2.0, mu.to_rad(30+ZERO_ANGLE_DEG)])
     
     ans = mu.tag_in_world_to_tag_in_camera(camNeg30, tag01)
     assert tag_angle_is_correct(ans, [root3/2.0, -0.5, cant_see_it])
@@ -164,23 +178,23 @@ def test_tag_in_world_to_tag_in_camera():
     # 90 deg rotation, no translation
     cam90 = [0, 0, mu.to_rad(90)]
     ans = mu.tag_in_world_to_tag_in_camera(cam90, tag10)
-    assert tag_angle_is_correct(ans, [-1, 0, mu.to_rad(-90+zero_angle)])
+    assert tag_angle_is_correct(ans, [-1, 0, mu.to_rad(-90+ZERO_ANGLE_DEG)])
 
     ans = mu.tag_in_world_to_tag_in_camera(cam90, tag01)
-    assert tag_angle_is_correct(ans, [0, 1, mu.to_rad(zero_angle)])
+    assert tag_angle_is_correct(ans, [0, 1, mu.to_rad(ZERO_ANGLE_DEG)])
     
     ans = mu.tag_in_world_to_tag_in_camera(cam90, tag55)
-    assert tag_angle_is_correct(ans, [-5, 5, mu.to_rad(-45+zero_angle)])
+    assert tag_angle_is_correct(ans, [-5, 5, mu.to_rad(-45+ZERO_ANGLE_DEG)])
 
     # -45 deg rotation, -3 Y translation
     camNeg45_minus3 = [0, -3, mu.to_rad(-45)]
     tag3 = [3, 0, 0]
     ans = mu.tag_in_world_to_tag_in_camera(camNeg45_minus3, tag3)
-    assert tag_angle_is_correct(ans, [3*root2, 0, mu.to_rad(45+zero_angle)])
+    assert tag_angle_is_correct(ans, [3*root2, 0, mu.to_rad(45+ZERO_ANGLE_DEG)])
   
     tagMinus3 = [0, -3, mu.to_rad(-45)]
     ans = mu.tag_in_world_to_tag_in_camera(camNeg45_minus3, tagMinus3)
-    assert tag_angle_is_correct(ans, [0, 0, mu.to_rad(zero_angle)]) # tag co-located with camera
+    assert tag_angle_is_correct(ans, [0, 0, mu.to_rad(ZERO_ANGLE_DEG)]) # tag co-located with camera
 
     # 180 deg rotation, no translation
     camNeg180 = [0, 0, mu.to_rad(-180)] 
@@ -212,7 +226,7 @@ def test_tag_in_world_to_tag_in_camera():
     camSimStart = [0.25, 0, mu.to_rad(90)]
     tagInSim = [0.5,1, np.pi/2]
     ans = mu.tag_in_world_to_tag_in_camera(camSimStart, tagInSim)
-    assert tag_angle_is_correct(ans, [-0.25, 1, mu.to_rad(zero_angle)])
+    assert tag_angle_is_correct(ans, [-0.25, 1, mu.to_rad(ZERO_ANGLE_DEG)])
     print("Passed test_tag_in_world_to_tag_in_camera!")
 
 def test_camera_in_world_to_robot_in_world():

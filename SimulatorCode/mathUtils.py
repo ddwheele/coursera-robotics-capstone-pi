@@ -2,6 +2,9 @@
 import numpy as np
 import math
 
+# angle reported if tag exactly faces the camera
+ZERO_ANGLE = np.pi/2.0
+
 def to_rad(degrees):
   return degrees * np.pi / 180.0
 
@@ -27,7 +30,7 @@ def ensure_between(theta, low, high):
 
 # Inputs:
 #   tag_world: tag in world coordinates (x,y, theta; x goes out back of tag)
-#   tag_camera: tag in camera coordinates (x,z,theta = 0 if straight on, 
+#   tag_camera: tag in camera coordinates (x,z,theta = ZERO_ANGLE if straight on, 
 #               +ive if rotated around vertical)
 # Outputs:
 #   returns camera position in world coordinates 
@@ -36,14 +39,22 @@ def tag_in_camera_to_camera_in_world(tag_world, tag_camera):
   #   wP = wRt * tP + wTt
 
   # need to translate to fake camera frame, X=real cam z and Y=real cam x
-  tag_cam_x = tag_camera[1]
-  tag_cam_y = tag_camera[0]
+  tag_cam_x = tag_camera[1] # toward tag
+  tag_cam_y = tag_camera[0] # to left
 
+  # rho = distance directly from camera to tag
   rho = np.sqrt(tag_cam_x**2 + tag_cam_y**2)
-  phi = np.arctan2(tag_cam_y, tag_cam_x)
-  psi = tag_camera[2] - phi - np.pi/2
 
-  # tP = camera in tag frame
+  # angle contributed from tag being oblique to camera, opposite as theta from tag_camera
+  oblique_phi = ZERO_ANGLE - tag_camera[2]
+
+  # phi = angle contributed by tag not being at center of FOV, positive left (+y)
+  offset_phi = np.arctan2(tag_cam_y, tag_cam_x)
+
+  # psi = angle between rho and tag X axis
+  psi = oblique_phi + offset_phi
+
+  # tP = camera location in tag frame
   tP = np.array([[-rho * np.cos(psi)], [rho * np.sin(psi)]])
 
   # wTt = vector from world origin to tag origin
@@ -54,18 +65,16 @@ def tag_in_camera_to_camera_in_world(tag_world, tag_camera):
                   [-np.sin(tag_world[2]), np.cos(tag_world[2])]])
 
   wP = np.matmul(wRt, tP) + wTt
-  cam_world_angle = tag_world[2] - tag_camera[2] + np.pi/2
+  cam_world_angle = tag_world[2] - tag_camera[2] + ZERO_ANGLE
 
-  return [wP[0], wP[1], cam_world_angle]
-
-
+  return [wP[0,0], wP[1,0], cam_world_angle]
 
 # Input:
 #   cam: camera position in world coordinates (x, y, theta = view axis)
 #   tag: tag position in world coordinates (x,y, theta = out back of tag)
 #   world coordinates are x = right, y = forward, theta around vertical z (right-handed)
 # Output:
-#   tag position in camera coordinates (x,z,theta = 0 if straight on, +ive if rotated around vertical) 
+#   tag position in camera coordinates (x,z,theta = ZERO_ANGLE if straight on, +ive if rotated around vertical) 
 #   camera coordinates are x = left, z = forward = view axis (left-handed)
 def tag_in_world_to_tag_in_camera(cam, tag) :
   cant_see_it = 5
@@ -107,7 +116,7 @@ def tag_in_world_to_tag_in_camera(cam, tag) :
 
   # we are adding pi/2 here because April tag library reports 90 deg if tag x aligns 
   # with our "fake camera" x
-  tag_angle_in_cam_frame = ensure_between(tag_theta-cam_theta+np.pi/2, -np.pi, np.pi)
+  tag_angle_in_cam_frame = ensure_between(tag_theta-cam_theta+ZERO_ANGLE, -np.pi, np.pi)
  
   tag_theta = ensure_between( tag_theta, -np.pi, np.pi)
 
@@ -154,7 +163,7 @@ def tag_in_world_to_tag_in_camera(cam, tag) :
       relative_theta = cant_see_it
 
   # cP is in fake camera coords, so need to swap order to get x, z as expected
-  return [cP[1], cP[0], relative_theta]
+  return [cP[1,0], cP[0,0], relative_theta]
 
 # Input:
 #   rob: robot position in world coordinates (x,y,theta)
@@ -163,15 +172,19 @@ def tag_in_world_to_tag_in_camera(cam, tag) :
 #   camera position in world coordinates (x,y,theta)
 def robot_in_world_to_camera_in_world(rob, t_cam_to_body):
   # rotation matrix (robot in world)
-  ct = np.cos(rob[2])
-  st = np.sin(rob[2])
+  ct = np.cos(ensure_number(rob[2]))
+  st = np.sin(ensure_number(rob[2]))
   rotmat = np.array([[ct, -st, 0], [st, ct, 0], [0, 0, 1]],dtype=object)
 
   # camera location in homogeneous coordinates
-  camera_hom = np.array([t_cam_to_body[0], t_cam_to_body[1], 1],dtype=object)
+  camera_hom = np.array([ensure_number(t_cam_to_body[0]), ensure_number(t_cam_to_body[1]), 1],dtype=object)
   rotated_cam = np.matmul(rotmat, camera_hom)
   
-  ans = [rob[0] + rotated_cam[0], rob[1]+rotated_cam[1], rob[2]]
+  ans = [ensure_number(rob[0] + rotated_cam[0]),ensure_number(rob[1]+rotated_cam[1]), ensure_number(rob[2])]
+  print(ans[0])
+  print(ans[1])
+  print(ans[2])
+  print(ans)
   return ans
 
 # Input:
@@ -181,5 +194,6 @@ def robot_in_world_to_camera_in_world(rob, t_cam_to_body):
 #   robot position in world coordinates (x,y,theta) 
 def camera_in_world_to_robot_in_world(cam, t_cam_to_body):
   inverse = [-t_cam_to_body[0], -t_cam_to_body[1], -t_cam_to_body[2]]
-  return robot_in_world_to_camera_in_world(cam, inverse)
+  ans = robot_in_world_to_camera_in_world(cam, inverse)
+  return ans
 

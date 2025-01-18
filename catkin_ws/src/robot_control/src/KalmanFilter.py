@@ -124,7 +124,7 @@ class KalmanFilter:
     tag_number = int(tag_cam[3])
 
     # find the real coordinates of that tag
-    tag_world = self.markers[tag_number-1]
+    tag_world = self.markers[tag_number]
 
     cam_in_world = mutil.tag_in_camera_to_camera_in_world(tag_world, tag_cam)
 
@@ -158,6 +158,15 @@ class KalmanFilter:
     # K = Kalman gain
     # z_t = measured location (so robot_in_world, not z_t )
     #
+    print("+++ rob in world")
+    print(robot_in_world)
+    print(self.x_t)
+    print((robot_in_world - self.x_t))
+    print("+++ K=")
+    print(K)
+    print( K * (robot_in_world - self.x_t))
+    print(self.x_t + K * (robot_in_world - self.x_t))
+
     mu = self.x_t + K * (robot_in_world - self.x_t)
 
     # Update the covariance:
