@@ -236,7 +236,7 @@ class RobotSim(object):
         wz - number for angular velocity of the robot, in rad/s
         Outputs: None, but controls the robot
         """
-       # print("Commanded velocity = %.2f; Omega = %.2f deg" % (vx, wz * 180./np.pi))
+        print("Commanded velocity = %.2f; Omega = %.2f deg" % (vx, wz * 180./np.pi))
         noise = np.random.normal(0,self.__control_noise)
         self.__vel = min(max(vx + noise[0],0),self.__MAX_VELOCITY)
         self.__omega = min(max(wz + noise[1],-self.__MAX_OMEGA),self.__MAX_OMEGA)

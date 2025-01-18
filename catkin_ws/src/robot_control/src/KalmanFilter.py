@@ -52,15 +52,15 @@ class KalmanFilter:
     # print(imu_meas)
 
     dt = imu_meas[4][0] - self.last_time # time interval
-    # print("dt = %f" %(dt))
+
 
     omega = imu_meas[3,0] # angular velocity
     theta = self.x_t[2] # predicted robot orientation, for legibility
-    n_v = self.Q_t[0][0] # velocity noise
-    n_w = self.Q_t[1][1] # omega noise
+   # n_v = self.Q_t[0][0] # velocity noise
+   # n_w = self.Q_t[1][1] # omega noise
     cos_t = np.cos(theta)
     sin_t = np.sin(theta)
-
+ 
     # Calculate new pose prediction (according to class notes)
     #
     #                           [ v*cos(theta) ]        [ n_v*cos(theta) ]
@@ -69,8 +69,13 @@ class KalmanFilter:
     #
     # But including noise directly in the state estimate makes no sense. Eliminating it.
     a = self.x_t
+
+    print("dt = %f" %(dt))
+    print("v = %f" %(v))
+    print("sin_t = %f" %(sin_t))
+
     b = dt * np.array([v*cos_t, v*sin_t, omega])
-    c = dt * np.array([n_v*cos_t, n_v*sin_t, n_w])
+    #c = dt * np.array([n_v*cos_t, n_v*sin_t, n_w])
 
     print("propagated movement:")
     print(b)

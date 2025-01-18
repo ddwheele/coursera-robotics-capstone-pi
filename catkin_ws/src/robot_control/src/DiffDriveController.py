@@ -39,13 +39,12 @@ class DiffDriveController():
   #  print("angle error is %f deg" % (theta * 180./np.pi))
 
     v = self.__k_rho * z
+    v = min(v, self.__MAX_SPEED)
+
     omega = self.__k_alpha * theta
-
+    omega = min(omega, self.__MAX_OMEGA)
    # print("\t\t\t\t\t\tv=%.2f m/s; omega=%.2f deg/s" % (v, omega*180.0/np.pi))
-
     return (v, omega, False)
-
-
 
   def compute_vel(self, state, goal):
     """
