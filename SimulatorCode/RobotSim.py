@@ -236,7 +236,7 @@ class RobotSim(object):
         wz - number for angular velocity of the robot, in rad/s
         Outputs: None, but controls the robot
         """
-        print("Commanded velocity = %.2f; Omega = %.2f deg" % (vx, wz * 180./np.pi))
+       # print("Commanded velocity = %.2f; Omega = %.2f deg" % (vx, wz * 180./np.pi))
         noise = np.random.normal(0,self.__control_noise)
         self.__vel = min(max(vx + noise[0],0),self.__MAX_VELOCITY)
         self.__omega = min(max(wz + noise[1],-self.__MAX_OMEGA),self.__MAX_OMEGA)
@@ -318,6 +318,8 @@ class RobotSim(object):
         Called to update the simulation on every frame
         (where the simulating happens)
         """
+        print("== GROUND TRUTH POSITION")
+        print(self.__x_gt)
         # Prep for the next frame
         #plt.hold(True)
         self.__frame_num += 1
@@ -382,8 +384,6 @@ class RobotSim(object):
 
         # Draw estimated position of robot (ghost version of robot)
         if self.__est_state is not None:
-            print(self.__est_state)
-            print(self.__est_state.shape)
             for s in range(len(self.__shapes)):
                 pts = np.zeros((len(self.__shapes[s]),2))
                 for k in range(len(self.__shapes[s])):

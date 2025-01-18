@@ -36,12 +36,12 @@ class DiffDriveController():
         return (0,0,True)
 
     theta = np.arctan2(x, z)
-    print("angle error is %f deg" % (theta * 180./np.pi))
+  #  print("angle error is %f deg" % (theta * 180./np.pi))
 
     v = self.__k_rho * z
     omega = self.__k_alpha * theta
 
-    print("\t\t\t\t\t\tv=%.2f m/s; omega=%.2f deg/s" % (v, omega*180.0/np.pi))
+   # print("\t\t\t\t\t\tv=%.2f m/s; omega=%.2f deg/s" % (v, omega*180.0/np.pi))
 
     return (v, omega, False)
 
@@ -74,5 +74,5 @@ class DiffDriveController():
 
     v = self.__k_rho * rho
     omega = self.__k_alpha * alpha + self.__k_beta * beta
-    print("\t\t\t\t\t\tv=%.2f m/s; theta=%.2f deg/s" % (v, omega*180.0/np.pi))
+  #  print("\t\t\t\t\t\tv=%.2f m/s; theta=%.2f deg/s" % (v, omega*180.0/np.pi))
     return (v, omega, False)

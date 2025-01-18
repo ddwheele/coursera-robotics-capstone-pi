@@ -23,11 +23,11 @@ class KalmanFilter:
     self.markers = markers
     self.t_cam_to_body = t_cam_to_body
     self.last_time = None # Used to keep track of time between measurements 
-    self.Q_t = np.array([[1,0], [0,1]]) # 2x2 uncertainty to add to covariance when predicting
-    self.R_t = np.array([[1,0,0], [0,1,0], [0,0,1]]) # 3x3 uncertainty of sensor noise
+    self.Q_t = np.array([[0.05,0], [0,0.03]]) # 2x2 uncertainty to add to covariance when predicting
+    self.R_t = np.array([[.1,0,0], [0,.1,0], [0,0,0.1]]) # 3x3 uncertainty of sensor noise
     # Initialize position to origin, with a huge covariance
     self.x_t = np.zeros(3) # estimated position
-    self.P_t = np.full((3,3), 10e6) # initial covariance matrix
+    self.P_t = np.eye(3) * 10e6 # initial covariance matrix
 
   def prediction(self, v, imu_meas):
     """
@@ -48,11 +48,11 @@ class KalmanFilter:
     if self.last_time is None:
       self.last_time = imu_meas[4][0] # time from imu
       return (self.x_t, self.P_t)
-    print("======= IMU ============")
-    print(imu_meas)
+    # print("IMU")
+    # print(imu_meas)
 
     dt = imu_meas[4][0] - self.last_time # time interval
-    print("dt = %f" %(dt))
+    # print("dt = %f" %(dt))
 
     omega = imu_meas[3,0] # angular velocity
     theta = self.x_t[2] # predicted robot orientation, for legibility
@@ -61,18 +61,23 @@ class KalmanFilter:
     cos_t = np.cos(theta)
     sin_t = np.sin(theta)
 
-    # Calculate new pose prediction
+    # Calculate new pose prediction (according to class notes)
     #
     #                           [ v*cos(theta) ]        [ n_v*cos(theta) ]
     #   mu_hat = u_(t-1) + dt * [ v*sin(theta) ] + dt * [ n_v*sin(theta) ] = f(x,omega,noise)
     #                           [ omega        ]        [ n_w            ]
     #
+    # But including noise directly in the state estimate makes no sense. Eliminating it.
     a = self.x_t
     b = dt * np.array([v*cos_t, v*sin_t, omega])
     c = dt * np.array([n_v*cos_t, n_v*sin_t, n_w])
-    mu_hat = a + b + c
 
-   # mu_hat = self.x_t + dt * np.array([[v*cos_t], [v*sin_t], [omega]]) + dt * np.array([[n_v*cos_t], [n_v*sin_t], [n_w]])
+    print("propagated movement:")
+    print(b)
+   # print("noise term:")
+   # print(c)
+
+    mu_hat = a + b 
 
     # Calculate new covariance matrix (Sigma = P):
     # 
@@ -102,6 +107,9 @@ class KalmanFilter:
     self.P_t = Sigma_hat
 
     self.last_time = imu_meas[4]
+
+    print("Propagated Position:")
+    print(self.x_t)
     return (self.x_t, self.P_t)
 
   def update(self,z_t):
@@ -130,6 +138,9 @@ class KalmanFilter:
 
     robot_in_world = mutil.camera_in_world_to_robot_in_world(cam_in_world, self.t_cam_to_body)
     
+    print("Robot from tag:")
+    print(robot_in_world)
+
     # Compute Kalman gain:   
     #
     #               ( dh )T   [( dh )         ( dh )T       ]-1
@@ -158,16 +169,7 @@ class KalmanFilter:
     # K = Kalman gain
     # z_t = measured location (so robot_in_world, not z_t )
     #
-    print("+++ rob in world")
-    print(robot_in_world)
-    print(self.x_t)
-    print((robot_in_world - self.x_t))
-    print("+++ K=")
-    print(K)
-    print( K * (robot_in_world - self.x_t))
-    print(self.x_t + K * (robot_in_world - self.x_t))
-
-    mu = self.x_t + K * (robot_in_world - self.x_t)
+    mu = self.x_t +np.matmul(K,(robot_in_world - self.x_t))
 
     # Update the covariance:
     #
@@ -213,13 +215,17 @@ class KalmanFilter:
     """
     # Check if an IMU measurement came in
     if imu_meas is not None:
+      print("============ PREDICTION: ")
       self.prediction(v, imu_meas)
 
-    # Check if April Tag measurment came in
+    # Check if April Tag measurement came in
     if z_t is not None and len(z_t) > 0:
+      print("=========== UPDATING WITH MEASUREMENT: ")
       self.update(z_t)
  
-    print("step_filter returning: ")
+    print("FINAL ANSWER: ")
     print(self.x_t)
+    print("============================================")
+    print("============================================")
     return self.x_t
  
