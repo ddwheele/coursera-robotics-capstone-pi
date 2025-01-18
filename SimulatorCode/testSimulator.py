@@ -82,6 +82,14 @@ def test_tag_in_camera_to_camera_in_world():
   ans = mu.tag_in_camera_to_camera_in_world(tag2Neg2_Neg45, tag_straight_at_camera_root2)
   assert triplet_is_correct(ans, [1,-1,mu.to_rad(-45)])
 
+  cam_in_world = [2, 1, mu.to_rad(45)]
+  tag_in_world = [6, 2, mu.to_rad(60)]
+  tag_in_cam =  mu.tag_in_world_to_tag_in_camera(cam_in_world, tag_in_world)
+  print(tag_in_cam)
+  ans = mu.tag_in_camera_to_camera_in_world(tag_in_world, tag_in_cam)
+  print(ans)
+  assert triplet_is_correct(ans, cam_in_world)
+
   # Sim start point
   tag_42_60 = [4, 2, mu.to_rad(60)] # tag in world
   tag_cam_sim2 = [-root2/2, 3*root2/2, mu.to_rad(15 + ZERO_ANGLE_DEG)] # tag in camera
@@ -104,19 +112,10 @@ def test_tag_in_camera_to_camera_in_world():
 #   world coordinates: x = right, y = forward, theta around vertical z (right-handed)
 #   camera coordinates: x = left, z = forward (left-handed)
 def test_tag_in_world_to_tag_in_camera():
-    
-    cam_in_world = [2, 1, mu.to_rad(45)]
-    tag_in_world = [6, 2, mu.to_rad(60)]
-    answer =  mu.tag_in_world_to_tag_in_camera(cam_in_world, tag_in_world)
-    print(answer)
-    return
-
-
     root2 = np.sqrt(2)
     root3 = np.sqrt(3)
     cant_see_it = 5 # angle > pi/2, indicates tag is not visible in camera
 
-    
     # no translation, no rotation
     cam0 = [0,0,0] # camera faces east
     tag10 = [1,0,0] # front of tag faces origin (west)
@@ -343,10 +342,10 @@ def test_robot_in_world_to_camera_in_world():
   print("Passed test_robot_in_world_to_camera_in_world!")
 
 def main(args):
-  #test_tag_in_camera_to_camera_in_world()
+  test_tag_in_camera_to_camera_in_world()
   test_tag_in_world_to_tag_in_camera()
-  #test_robot_in_world_to_camera_in_world()
-  #test_camera_in_world_to_robot_in_world()
+  test_robot_in_world_to_camera_in_world()
+  test_camera_in_world_to_robot_in_world()
 
   print("PASSED ALL TESTS!")
 

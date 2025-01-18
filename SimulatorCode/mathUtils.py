@@ -45,24 +45,30 @@ def tag_in_camera_to_camera_in_world(tag_world, tag_camera):
   # rho = distance directly from camera to tag
   rho = np.sqrt(tag_cam_x**2 + tag_cam_y**2)
 
-  # angle contributed from tag being oblique to camera, opposite as theta from tag_camera
-  oblique_phi = ZERO_ANGLE - tag_camera[2]
+  # d = angle between fake camera x and tag x
+  d = tag_camera[2] - ZERO_ANGLE # positive when tag is turned positive
 
-  # phi = angle contributed by tag not being at center of FOV, positive left (+y)
-  offset_phi = np.arctan2(tag_cam_y, tag_cam_x)
+  # q = angle from tag x to fake cam -y (90 deg from fake cam x)
+  q = np.pi/2 - d
 
-  # psi = angle between rho and tag X axis
-  psi = oblique_phi + offset_phi
+  if np.isclose(tag_cam_y, 0):
+    tP = np.array([-rho, 0])
+  else:
+    # a = angle formed by tag_cam_x and tag_cam_y right triangle
+    a = np.arctan2(tag_cam_x, -tag_cam_y) # positive when tag_cam_y negative
 
-  # tP = camera location in tag frame
-  tP = np.array([[-rho * np.cos(psi)], [rho * np.sin(psi)]])
+    # psi = angle between rho and tag -x axis
+    psi = np.pi - q - a
+
+    # tP = camera location in tag frame
+    tP = np.array([[-rho * np.cos(psi)], [rho * np.sin(psi)]])
 
   # wTt = vector from world origin to tag origin
   wTt = np.array([[tag_world[0]], [tag_world[1]]])
 
   # wRt columns are tag axis in world coordinates
-  wRt = np.array([[ np.cos(tag_world[2]), np.sin(tag_world[2])],\
-                  [-np.sin(tag_world[2]), np.cos(tag_world[2])]])
+  wRt = np.array([[ np.cos(tag_world[2]),-np.sin(tag_world[2])],\
+                  [np.sin(tag_world[2]), np.cos(tag_world[2])]])
 
   wP = np.matmul(wRt, tP) + wTt
   cam_world_angle = tag_world[2] - tag_camera[2] + ZERO_ANGLE
