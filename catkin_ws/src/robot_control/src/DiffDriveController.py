@@ -3,8 +3,7 @@
 import numpy as np
 
 class DiffDriveController():
-  EPSILON = 0.10 # 2 cm
-  EPSILON_RADIANS = 0.0349066 # 2 degrees
+  EPSILON = 0.20 # 20 cm
 
   """
   Class used for controlling the robot linear and angular velocity

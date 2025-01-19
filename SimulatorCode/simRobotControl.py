@@ -76,7 +76,7 @@ class RobotControl(object):
     self.robot_sim.set_est_state(est_state)
 
     if self.curr_goal_num >= len(self.goal_path):
-      print("SWEET SWEET SUCCESS")
+      print("SUCCESS")
       return
 
     #if meas is not None and len(meas) > 0:
@@ -91,11 +91,11 @@ class RobotControl(object):
       self.robot_sim.command_velocity(control[0], control[1])
       self.previous_velocity=control[0]
     else:
-      print("REACHED GOAL %d!!!!!!!!!!!!!!!!!" % (self.curr_goal_num))
+      print("REACHED GOAL %d" % (self.curr_goal_num))
       self.curr_goal_num += 1
+      self.robot_sim.command_velocity(0,0)
+      self.previous_velocity=0
      
-
-
     return
     
 def main(args):
