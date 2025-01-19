@@ -66,7 +66,7 @@ class RobotControl(object):
 
   def process_measurements(self):
     """ 
-    Main loop of the robot - where all measurements, control, and estimaiton
+    Main loop of the robot - where all measurements, control, and estimation
     are done. This function is called at 60Hz
     """
     meas = self.robot_sim.get_measurements()
