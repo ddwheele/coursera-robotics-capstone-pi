@@ -29,7 +29,7 @@ class RobotControl(object):
   follow_tag = True
   drive_path = False
 
-  def __init__(self, world_map,occupancy_map, pos_init, pos_goal, max_speed, max_omega, x_spacing, y_spacing, t_cam_to_body):
+  def __init__(self, world_map,occupancy_map, pos_init, pos_goal, max_speed, max_omega, x_spacing, y_spacing, t_cam_to_body, goal_path):
     """
     Initialize the class
     """
@@ -37,11 +37,12 @@ class RobotControl(object):
     # Handles all the ROS related items
     self.ros_interface = ROSInterface(t_cam_to_body)
     
-    self.kalman_filter = KalmanFilter(world_map)
+    self.kalman_filter = KalmanFilter(world_map, t_cam_to_body)
     self.diff_drive_controller = DiffDriveController(max_speed, max_omega)
 
     self.goal_path = goal_path
     self.curr_goal_num = 0
+    self.control = [0,0,False]
 
   def stop(self):
     if self.use_simulator:
@@ -70,8 +71,9 @@ class RobotControl(object):
     # Module 5 - follow tag
     if self.follow_tag:
       if meas is None:
-        if not control[2]: # just keep doing what we were doing
-          self.command_velocity(control[0], control[1])
+        if not self.control[2]:
+          # just keep doing what we were doing
+          self.command_velocity(self.control[0], self.control[1])
         return
       else:
         tag = np.array([ meas[0][0], meas[0][1] ])
@@ -80,10 +82,10 @@ class RobotControl(object):
         theta = meas[0][2] * 180.0 / np.pi
         print("tag %d at x=%.2fm, y=%.2fm, theta=%.2f deg" % (meas[0][3],meas[0][0], meas[0][1], theta))
 
-        control = self.diff_drive_controller.track_tag(tag)
+        self.control = self.diff_drive_controller.track_tag(tag)
 
-        if not control[2]: # if not at goal
-          self.command_velocity(control[0], control[1])
+        if not self.control[2]: # if not at goal
+          self.command_velocity(self.control[0], self.control[1])
     return
 
     # Module 7 - drive specified path
@@ -125,9 +127,10 @@ def main(args):
   t_cam_to_body = np.array(params['t_cam_to_body'])
   x_spacing = params['x_spacing']
   y_spacing = params['y_spacing']
+  goal_path = params['goal_path']
 
   # Intialize the RobotControl object
-  robotControl = RobotControl(world_map,occupancy_map, pos_init, pos_goal, max_vel, max_omega, x_spacing, y_spacing, t_cam_to_body)
+  robotControl = RobotControl(world_map,occupancy_map, pos_init, pos_goal, max_vel, max_omega, x_spacing, y_spacing, t_cam_to_body, goal_path)
 
   # Call process_measurements at 10Hz
   r = rospy.Rate(10)
