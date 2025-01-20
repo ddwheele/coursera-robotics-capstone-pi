@@ -26,7 +26,7 @@ class RobotControl(object):
 
   # only one of the following should be set to true
   demo_drive = False
-  follow_tag = True
+  follow_tag = True 
   drive_path = False
 
   # timesteps since we last saw a tag
@@ -48,6 +48,7 @@ class RobotControl(object):
     self.goal_path = goal_path
     self.curr_goal_num = 0
     self.control = [0,0,False]
+    self.previous_velocity = [0,0]
 
   def stop(self):
     if self.use_simulator:
@@ -65,9 +66,11 @@ class RobotControl(object):
     """ 
     This function is called at 60Hz
     """
+    print("proc_meas 0")
     meas = self.ros_interface.get_measurements()
+    print("got meas")
     imu_meas = self.ros_interface.get_imu()
-
+    print("got imu meas")
     # Module 3 - demo drive
     if self.demo_drive:
       self.ros_interface.command_velocity(0.3, 0.5)
@@ -100,12 +103,15 @@ class RobotControl(object):
         if not self.control[2]: # if not at goal
          self.command_velocity(self.control[0], self.control[1])
         self.no_tag_count = 0
-    return
+      return
 
     # Module 7 - drive specified path
     if self.drive_path:
+      print("driving path")
       est_state = self.kalman_filter.step_filter(self.previous_velocity, imu_meas, meas)
 
+      print("est state = %f, %f, %f" % (est_state[0], est_state[1], est_state[2]))  
+      
       if self.curr_goal_num >= len(self.goal_path):
         print("SUCCESS")
         self.command_velocity(0,0)
@@ -113,7 +119,7 @@ class RobotControl(object):
         return
 
       goal = self.goal_path[self.curr_goal_num]
-
+      print("about to call controller. Goal is %f, %f" %(goal[0], goal[1]))
       control = self.diff_drive_controller.compute_vel(est_state, goal)
 
       if not control[2]: # if not at goal
