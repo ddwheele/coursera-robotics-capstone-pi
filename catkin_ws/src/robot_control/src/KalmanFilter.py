@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import numpy as np
 
 import mathUtils as mutil
@@ -88,10 +88,10 @@ class KalmanFilter:
     dfdx = np.eye(3) + dt * np.array([[0, 0, -v*sin_t], [0, 0, v*cos_t], [0, 0, 0]])
     dfdn = dt * np.array([[cos_t, 0], [sin_t, 0], [0, 1]])
 
-    PtdfdxT = np.matmul(self.P_t, dfdx.T)
-    QtdfdnT = np.matmul(self.Q_t, dfdn.T)
+    PtdfdxT = np.dot(self.P_t, dfdx.T)
+    QtdfdnT = np.dot(self.Q_t, dfdn.T)
 
-    Sigma_hat = np.matmul(dfdx, PtdfdxT) + np.matmul(dfdn, QtdfdnT)
+    Sigma_hat = np.dot(dfdx, PtdfdxT) + np.dot(dfdn, QtdfdnT)
 
     self.x_t = mu_hat
     self.P_t = Sigma_hat
@@ -148,7 +148,7 @@ class KalmanFilter:
     #   K_t = P_t * [P_t + R_t]^(-1)
     #          
     invOfPtPlusRt = np.linalg.inv(self.P_t + self.R_t)
-    K = np.matmul(self.P_t, invOfPtPlusRt)
+    K = np.dot(self.P_t, invOfPtPlusRt)
 
     # Compute best estimate location:
     # 
@@ -159,7 +159,7 @@ class KalmanFilter:
     # K = Kalman gain
     # z_t = measured location (so robot_in_world, not z_t )
     #
-    mu = self.x_t +np.matmul(K,(robot_in_world - self.x_t))
+    mu = self.x_t +np.dot(K,(robot_in_world - self.x_t))
 
     # Update the covariance:
     #
@@ -176,7 +176,7 @@ class KalmanFilter:
     #
     #   Sigma = P_t - K * P_t
     #
-    Sigma = self.P_t - np.matmul(K, self.P_t)
+    Sigma = self.P_t - np.dot(K, self.P_t)
 
     self.x_t = mu
     self.P_t = Sigma

@@ -46,7 +46,7 @@ def tag_in_camera_to_camera_in_world(tag_world, tag_camera):
   wRt = np.array([[ np.cos(tag_world[2]), np.sin(tag_world[2])],\
                   [-np.sin(tag_world[2]), np.cos(tag_world[2])]])
 
-  wP = np.matmul(wRt, tP) + wTt
+  wP = np.dot(wRt, tP) + wTt
   cam_world_angle = tag_world[2] - tag_camera[2] + np.pi/2
 
   return [wP[0], wP[1], cam_world_angle]
@@ -85,7 +85,7 @@ def tag_in_world_to_tag_in_camera(cam, tag) :
                   [-np.sin(cam_theta), np.cos(cam_theta)]])
 
   # cP = tag in camera frame
-  cP = np.matmul(cRw, wP) + cTw
+  cP = np.dot(cRw, wP) + cTw
 
   # we are adding pi/2 here because April tag library reports 90 deg if tag x aligns 
   # with our "fake camera" x
@@ -151,7 +151,7 @@ def robot_in_world_to_camera_in_world(rob, t_cam_to_body):
 
   # camera location in homogeneous coordinates
   camera_hom = np.array([t_cam_to_body[0], t_cam_to_body[1], 1],dtype=object)
-  rotated_cam = np.matmul(rotmat, camera_hom)
+  rotated_cam = np.dot(rotmat, camera_hom)
   
   ans = [rob[0] + rotated_cam[0], rob[1]+rotated_cam[1], rob[2]]
   return ans
