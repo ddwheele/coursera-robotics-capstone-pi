@@ -29,6 +29,11 @@ class RobotControl(object):
   follow_tag = True
   drive_path = False
 
+  # timesteps since we last saw a tag
+  no_tag_count =100
+  # if no_tag_count reaches this number, stop moving
+  WAIT_NUMBER = 30
+
   def __init__(self, world_map,occupancy_map, pos_init, pos_goal, max_speed, max_omega, x_spacing, y_spacing, t_cam_to_body, goal_path):
     """
     Initialize the class
@@ -65,15 +70,22 @@ class RobotControl(object):
 
     # Module 3 - demo drive
     if self.demo_drive:
-      self.ros_interface.command_velocity(-0.3, 0.5)
+      self.ros_interface.command_velocity(0.3, 0.5)
       return
 
     # Module 5 - follow tag
     if self.follow_tag:
       if meas is None:
-        if not self.control[2]:
+        if not self.control[2] and self.no_tag_count < self.WAIT_NUMBER:
           # just keep doing what we were doing
           self.command_velocity(self.control[0], self.control[1])
+          self.no_tag_count += 1
+          print("no_tag_count = %d" % (self.no_tag_count))
+        elif not self.control[2] and self.no_tag_count >= self.WAIT_NUMBER:
+          # pause and let your operator reposition the tag before you run into something
+          self.command_velocity(0,0)
+          self.no_tag_count += 1
+          print("HIT THE STOP, WAITING TO SEE A TAG")
         return
       else:
         tag = np.array([ meas[0][0], meas[0][1] ])
@@ -83,9 +95,11 @@ class RobotControl(object):
         print("tag %d at x=%.2fm, y=%.2fm, theta=%.2f deg" % (meas[0][3],meas[0][0], meas[0][1], theta))
 
         self.control = self.diff_drive_controller.track_tag(tag)
-
+        print("\t\t\t\t\t\tCONTROL = %f, %f, %d" %(self.control[0], self.control[1], self.control[2]))
+ 
         if not self.control[2]: # if not at goal
-          self.command_velocity(self.control[0], self.control[1])
+         self.command_velocity(self.control[0], self.control[1])
+        self.no_tag_count = 0
     return
 
     # Module 7 - drive specified path

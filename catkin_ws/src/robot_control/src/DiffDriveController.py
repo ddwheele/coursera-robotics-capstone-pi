@@ -3,13 +3,14 @@
 import numpy as np
 
 class DiffDriveController():
-  EPSILON = 0.20 # 20 cm
+  EPSILON = 0.25
+  # 20 cm
 
   """
   Class used for controlling the robot linear and angular velocity
   """
   def __init__(self, max_speed, max_omega):
-    self.__k_rho=1
+    self.__k_rho=0.4 #1
     self.__k_alpha=3
 
     self.__k_beta=0
@@ -28,8 +29,8 @@ class DiffDriveController():
     done - a boolean value specifying if the robot has reached its goal (or
         is close enough
     '''
-    x = tag[0]
-    z = tag[1]
+    x = tag[1]
+    z = tag[0]
 
     if(z < 0.1):
         return (0,0,True)
