@@ -54,8 +54,8 @@ class KalmanFilter:
     dt = now - self.last_time # time interval
     self.last_time = now
     v = cmd[0]
-    omega = cmd[1] #  imu_meas[3,0] # now commanded angular velocity
-    theta = self.x_t[2] # predicted robot orientation, for legibility
+    omega = mutil.ensure_number(cmd[1]) #  imu_meas[3,0] # now commanded angular velocity
+    theta = mutil.ensure_number(self.x_t[2]) # predicted robot orientation, for legibility
 
     cos_t = np.cos(theta)
     sin_t = np.sin(theta)
@@ -70,8 +70,7 @@ class KalmanFilter:
     a = self.x_t
     b = dt * np.array([v*cos_t, v*sin_t, omega])
 
-    mu_hat = a + b 
-
+    mu_hat = a + b.T 
     # Calculate new covariance matrix (Sigma = P):
     # 
     #               [  df              ( df )T ]   [  df          ( df )T ] 
@@ -207,6 +206,8 @@ class KalmanFilter:
     # Check if an IMU measurement came in
 #    if imu_meas is not None:
       # print("============ PREDICTION: ")
+    #import pdb
+    #pdb.set_trace()
     self.prediction(v, imu_meas)
 
     # Check if April Tag measurement came in

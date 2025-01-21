@@ -7,6 +7,14 @@ ZERO_ANGLE = 0
 def to_rad(degrees):
   return degrees * np.pi / 180.0
 
+def ensure_number(var):
+    if isinstance(var, float) or isinstance(var, int):
+        return var
+    if isinstance(var, np.ndarray):
+        return var[0]
+    if isinstance(var, list):
+        return var[0]
+
 # Inputs:
 #   theta - an angle in radians
 #   low - lower bound (like 0 or -pi)

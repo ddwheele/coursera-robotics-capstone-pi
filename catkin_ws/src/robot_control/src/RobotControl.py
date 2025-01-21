@@ -126,7 +126,11 @@ class RobotControl(object):
         self.command_velocity(control[0], control[1])
         self.previous_velocity=[control[0],control[1]]
       else:
+        print("***************************************")
+        print("***************************************")
         print("REACHED GOAL %d" % (self.curr_goal_num))
+        print("***************************************")
+        print("***************************************")
         self.curr_goal_num += 1
  
 def main(args):

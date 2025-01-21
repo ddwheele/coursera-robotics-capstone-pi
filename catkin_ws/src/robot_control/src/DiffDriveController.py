@@ -3,7 +3,7 @@
 import numpy as np
 
 class DiffDriveController():
-  EPSILON = 0.25
+  EPSILON = 0.1
   # 20 cm
 
   """
