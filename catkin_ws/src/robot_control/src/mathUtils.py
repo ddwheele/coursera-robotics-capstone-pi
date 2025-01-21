@@ -50,29 +50,32 @@ def tag_in_camera_to_camera_in_world(tag_world, tag_camera):
   # angle from camera x axis to the tag
   phi = np.arctan2(tag_cam_y, tag_cam_x)
 
-  # third angle in the right triangle with tag in camera axes
-  a = np.pi/2-phi
+  if isclose(phi,0): # looking straight at the tag
+    psi = 0
+  else:
+    # third angle in the right triangle with tag in camera axes
+    a = np.pi/2-phi
 
-  # q = 90 - d
-  # d = angle of tag as seen by camera
-  d = tag_camera[2]
-  q = np.pi/2 - d
+    # q = 90 - d
+    # d = angle of tag as seen by camera
+    d = tag_camera[2]
+    q = np.pi/2 - d
 
-  # psi = angle from tag x axis to camera
-  # psi = 180 - q - a
-  psi = np.pi - q - a
-  
+    # psi = angle from tag x axis to camera
+    # psi = 180 - q - a
+    psi = np.pi - q - a
+
+  # wRt columns are tag axes in world coordinates
+  wRt = np.array([[ np.cos(tag_world[2]),-np.sin(tag_world[2])],\
+                  [ np.sin(tag_world[2]), np.cos(tag_world[2])]])
+
   # tP = camera in tag frame
   tP = np.array([[-rho * np.cos(psi)], [rho * np.sin(psi)]])
 
   # wTt = vector from world origin to tag origin
   wTt = np.array([[tag_world[0]], [tag_world[1]]])
-
-  # wRt columns are tag axis in world coordinates
-  wRt = np.array([[ np.cos(tag_world[2]), np.sin(tag_world[2])],\
-                  [-np.sin(tag_world[2]), np.cos(tag_world[2])]])
-
   wP = np.dot(wRt, tP) + wTt
+
   cam_world_angle = tag_world[2] - tag_camera[2] 
 
   return [wP[0], wP[1], cam_world_angle]

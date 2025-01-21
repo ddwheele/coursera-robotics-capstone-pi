@@ -69,9 +69,9 @@ class RobotControl(object):
     """
     meas = self.ros_interface.get_measurements()
     if meas is None:
-        print"No tag"
+        print"-- No tag"
     else:
-        print("tag %d at x=%.2fm, y=%.2fm, theta=%.2f rad" % (meas[0][3],meas[0][0], meas[0][1], meas[0][2]))
+        print("[[TAG %d]] at x=%.2fm, y=%.2fm, theta=%.2f deg" % (meas[0][3],meas[0][0], meas[0][1], meas[0][2]*180/np.pi/2))
 
 
     imu_meas = self.ros_interface.get_imu()
@@ -157,7 +157,7 @@ def main(args):
   robotControl = RobotControl(world_map,occupancy_map, pos_init, pos_goal, max_vel, max_omega, x_spacing, y_spacing, t_cam_to_body, goal_path)
 
   # Call process_measurements at 10Hz
-  r = rospy.Rate(10)
+  r = rospy.Rate(1)
   while not rospy.is_shutdown():
     robotControl.process_measurements()
     r.sleep()
