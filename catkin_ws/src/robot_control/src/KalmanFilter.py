@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import numpy as np
+import time
 
 import mathUtils as mutil
 
@@ -29,7 +30,7 @@ class KalmanFilter:
     self.x_t = np.zeros(3) # estimated position
     self.P_t = np.eye(3) * 10e6 # initial covariance matrix
 
-  def prediction(self, v, imu_meas):
+  def prediction(self, cmd, imu_meas):
     """
     Performs the prediction step on the state x_t and covariance P_t
     Inputs:
@@ -46,11 +47,14 @@ class KalmanFilter:
         covariance
     """
     if self.last_time is None:
-      self.last_time = imu_meas[4][0] # time from imu
+      self.last_time = time.time() # floating pt seconds since epochimu_meas[4][0] # time from imu
       return (self.x_t, self.P_t)
 
-    dt = imu_meas[4][0] - self.last_time # time interval
-    omega = imu_meas[3,0] # angular velocity
+    now = time.time()
+    dt = now - self.last_time # time interval
+    self.last_time = now
+    v = cmd[0]
+    omega = cmd[1] #  imu_meas[3,0] # now commanded angular velocity
     theta = self.x_t[2] # predicted robot orientation, for legibility
 
     cos_t = np.cos(theta)
@@ -64,7 +68,6 @@ class KalmanFilter:
     #
     # But including noise directly in the state estimate makes no sense. Eliminating it.
     a = self.x_t
-
     b = dt * np.array([v*cos_t, v*sin_t, omega])
 
     mu_hat = a + b 
@@ -96,8 +99,6 @@ class KalmanFilter:
     self.x_t = mu_hat
     self.P_t = Sigma_hat
 
-    self.last_time = imu_meas[4]
-
     # print("Propagated Position:")
     # print(self.x_t)
     return (self.x_t, self.P_t)
@@ -118,7 +119,7 @@ class KalmanFilter:
     """
     # First, find where we have measured the robot to be.
     # For now, just use the first April Tag to calculate this.
-    tag_cam = z_t[0]
+    tag_cam = z_t[0] # x is forward out of the camera, y is to the left
     tag_number = int(tag_cam[3])
 
     # find the real coordinates of that tag
@@ -204,9 +205,9 @@ class KalmanFilter:
     x_t - current estimate of the state
     """
     # Check if an IMU measurement came in
-    if imu_meas is not None:
+#    if imu_meas is not None:
       # print("============ PREDICTION: ")
-      self.prediction(v, imu_meas)
+    self.prediction(v, imu_meas)
 
     # Check if April Tag measurement came in
     if z_t is not None and len(z_t) > 0:

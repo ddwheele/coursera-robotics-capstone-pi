@@ -11,7 +11,7 @@ class DiffDriveController():
   """
   def __init__(self, max_speed, max_omega):
     self.__k_rho=0.4 #1
-    self.__k_alpha=3
+    self.__k_alpha=0.5
 
     self.__k_beta=0
     self.__MAX_SPEED = max_speed

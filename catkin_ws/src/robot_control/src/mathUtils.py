@@ -2,6 +2,8 @@
 import numpy as np
 import math
 
+ZERO_ANGLE = 0
+
 def to_rad(degrees):
   return degrees * np.pi / 180.0
 
@@ -18,9 +20,12 @@ def ensure_between(theta, low, high):
     theta = theta + 2*np.pi
   return theta
 
+def isclose(a, b):
+    return abs(a-b) < 0.005
+
 # Inputs:
 #   tag_world: tag in world coordinates (x,y, theta; x goes out back of tag)
-#   tag_camera: tag in camera coordinates (x,z,theta = 0 if straight on, 
+#   tag_camera: tag in camera coordinates (x,y,theta = 0 if straight on, 
 #               +ive if rotated around vertical)
 # Outputs:
 #   returns camera position in world coordinates 
@@ -28,14 +33,27 @@ def tag_in_camera_to_camera_in_world(tag_world, tag_camera):
   # Position of camera in world coordinates:
   #   wP = wRt * tP + wTt
 
-  # need to translate to fake camera frame, X=real cam z and Y=real cam x
-  tag_cam_x = tag_camera[1]
-  tag_cam_y = tag_camera[0]
+  # camera x = direction camera is looking and y = camera's left
+  tag_cam_x = tag_camera[0]
+  tag_cam_y = tag_camera[1]
 
+  # straight line distance from camera to tag
   rho = np.sqrt(tag_cam_x**2 + tag_cam_y**2)
+  # angle from camera x axis to the tag
   phi = np.arctan2(tag_cam_y, tag_cam_x)
-  psi = tag_camera[2] - phi - np.pi/2
 
+  # third angle in the right triangle with tag in camera axes
+  a = np.pi/2-phi
+
+  # q = 90 - d
+  # d = angle of tag as seen by camera
+  d = tag_camera[2]
+  q = np.pi/2 - d
+
+  # psi = angle from tag x axis to camera
+  # psi = 180 - q - a
+  psi = np.pi - q - a
+  
   # tP = camera in tag frame
   tP = np.array([[-rho * np.cos(psi)], [rho * np.sin(psi)]])
 
@@ -47,7 +65,7 @@ def tag_in_camera_to_camera_in_world(tag_world, tag_camera):
                   [-np.sin(tag_world[2]), np.cos(tag_world[2])]])
 
   wP = np.dot(wRt, tP) + wTt
-  cam_world_angle = tag_world[2] - tag_camera[2] + np.pi/2
+  cam_world_angle = tag_world[2] - tag_camera[2] 
 
   return [wP[0], wP[1], cam_world_angle]
 
@@ -58,6 +76,7 @@ def tag_in_camera_to_camera_in_world(tag_world, tag_camera):
 # Output:
 #   tag position in camera coordinates (x,z,theta = 0 if straight on, +ive if rotated around vertical) 
 #   camera coordinates are x = left, z = forward = view axis (left-handed)
+# EXPECT THIS IS BROKEN NOW
 def tag_in_world_to_tag_in_camera(cam, tag) :
   cant_see_it = 5
   # To transform tag P in world coordinates to camera coordinates:
@@ -87,9 +106,7 @@ def tag_in_world_to_tag_in_camera(cam, tag) :
   # cP = tag in camera frame
   cP = np.dot(cRw, wP) + cTw
 
-  # we are adding pi/2 here because April tag library reports 90 deg if tag x aligns 
-  # with our "fake camera" x
-  tag_angle_in_cam_frame = ensure_between(tag[2]-cam[2]+np.pi/2, -np.pi, np.pi)
+  tag_angle_in_cam_frame = ensure_between(tag[2]-cam[2], -np.pi, np.pi)
  
   tag_theta = ensure_between( tag[2], -np.pi, np.pi)
 
@@ -97,14 +114,14 @@ def tag_in_world_to_tag_in_camera(cam, tag) :
   relative_theta = tag_angle_in_cam_frame
 
   # take care of positions where lines are vertical/horizontal
-  if math.isclose(cam_theta,0): # cam points right
+  if isclose(cam_theta,0): # cam points right
     if tag[0] >= cam[0]: # tag is to right of cam
       if tag_theta < -np.pi/2 or tag_theta > np.pi/2 : # tag points generally left
         # tag too oblique
         relative_theta = cant_see_it
     else: # tag is to left of cam
       relative_theta = cant_see_it
-  elif math.isclose(abs(cam_theta), np.pi): # cam points left
+  elif isclose(abs(cam_theta), np.pi): # cam points left
     if tag[0] <= cam[0]: # tag is left of cam
       if tag_theta > -np.pi/2 or tag_theta < np.pi/2: # tag points right-ish
         # tag too oblique
@@ -130,13 +147,13 @@ def tag_in_world_to_tag_in_camera(cam, tag) :
     # the sign of this value indicates which side of the line the tag is on
     tag_side = m*(tag[0] - cam[0]) - (tag[1] - cam[1])
 
-    if math.isclose(tag_side,0) or (visible>0 and tag_side>0) or (visible<0 and tag_side<0):
+    if isclose(tag_side,0) or (visible>0 and tag_side>0) or (visible<0 and tag_side<0):
       relative_theta = tag_angle_in_cam_frame
     else:
       relative_theta = cant_see_it
 
   # cP is in fake camera coords, so need to swap order to get x, z as expected
-  return [cP[1], cP[0], relative_theta]
+  return [cP[0], cP[1], relative_theta]
 
 # Input:
 #   rob: robot position in world coordinates (x,y,theta)

@@ -116,7 +116,7 @@ class RobotControl(object):
       if self.curr_goal_num >= len(self.goal_path):
         print("SUCCESS")
         self.command_velocity(0,0)
-        self.previous_velocity=0
+        self.previous_velocity=[0,0]
         return
 
       goal = self.goal_path[self.curr_goal_num]
@@ -124,7 +124,7 @@ class RobotControl(object):
 
       if not control[2]: # if not at goal
         self.command_velocity(control[0], control[1])
-        self.previous_velocity=control[0]
+        self.previous_velocity=[control[0],control[1]]
       else:
         print("REACHED GOAL %d" % (self.curr_goal_num))
         self.curr_goal_num += 1
