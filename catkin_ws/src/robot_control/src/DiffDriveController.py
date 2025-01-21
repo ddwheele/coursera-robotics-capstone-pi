@@ -3,15 +3,14 @@
 import numpy as np
 
 class DiffDriveController():
-  EPSILON = 0.1
-  # 20 cm
+  EPSILON = 0.07
 
   """
   Class used for controlling the robot linear and angular velocity
   """
   def __init__(self, max_speed, max_omega):
-    self.__k_rho=0.4 #1
-    self.__k_alpha=0.5
+    self.__k_rho=0.3 
+    self.__k_alpha=0.25
 
     self.__k_beta=0
     self.__MAX_SPEED = max_speed
@@ -64,12 +63,12 @@ class DiffDriveController():
     delta_y = goal[1] - state[1]
     theta = state[2]
 
-    print("Est State")
-    print(state)
+    print("Est State = %f, %f, %f deg" % (state[0], state[1], state[2]*180/np.pi))
     print("Goal")
     print(goal)
  
-    if delta_x < DiffDriveController.EPSILON and delta_y < DiffDriveController.EPSILON:
+    if abs(delta_x) < DiffDriveController.EPSILON and abs(delta_y) < DiffDriveController.EPSILON:
+      print("delta_x = %f and delta_y = %f" % (delta_x, delta_y))
       return (0, 0, True)
 
     rho = np.sqrt(delta_x**2 + delta_y**2)

@@ -206,8 +206,6 @@ class KalmanFilter:
     # Check if an IMU measurement came in
 #    if imu_meas is not None:
       # print("============ PREDICTION: ")
-    #import pdb
-    #pdb.set_trace()
     self.prediction(v, imu_meas)
 
     # Check if April Tag measurement came in
@@ -215,9 +213,5 @@ class KalmanFilter:
       # print("=========== UPDATING WITH MEASUREMENT: ")
       self.update(z_t)
  
-    # print("FINAL ANSWER: ")
-    # print(self.x_t)
-    # print("============================================")
-    # print("============================================")
     return self.x_t
  
